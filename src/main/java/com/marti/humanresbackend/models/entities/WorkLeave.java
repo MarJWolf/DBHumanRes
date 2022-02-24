@@ -6,24 +6,21 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Date;
 
-@Table(name = "user_table")
+@Table(name = "workleave")
 @Getter
 @Setter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class WorkLeave {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String email;
-    private String pass;
+    private int type;
+    private Date startDate;
+    private Date endDate;
+    private boolean status;
 
-    private String fullName;
-    private String jobTitle;
-
-    //workplace
-    //role (user/hr)
-
+    // TODO: 2/24/2022 : tipa na otpuska da se obraboti i preceni kakvo suvpada i vruzkata mejdu tablicite
 }
