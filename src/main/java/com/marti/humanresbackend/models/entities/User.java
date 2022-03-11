@@ -23,6 +23,16 @@ public class User {
     private String fullName;
     private String jobTitle;
 
+    private int paidDays;
+    private int unpaidDays;
+
+    public User(String email, String pass, String fullName, String jobTitle) {
+        this.email = email;
+        this.pass = pass;
+        this.fullName = fullName;
+        this.jobTitle = jobTitle;
+    }
+
     //workplace
     //role (user/hr)
 

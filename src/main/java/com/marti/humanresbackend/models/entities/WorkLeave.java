@@ -1,5 +1,7 @@
 package com.marti.humanresbackend.models.entities;
 
+import com.marti.humanresbackend.models.Status;
+import com.marti.humanresbackend.models.Type;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,10 +19,10 @@ import java.util.Date;
 public class WorkLeave {
     @Id
     private Long id;
-    private int type;
+    private Long userId;
+    private Type type;
     private Date startDate;
     private Date endDate;
-    private boolean status;
+    private Status status;
 
-    // TODO: 2/24/2022 : tipa na otpuska da se obraboti i preceni kakvo suvpada i vruzkata mejdu tablicite
 }
