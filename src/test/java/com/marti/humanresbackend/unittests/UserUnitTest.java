@@ -1,6 +1,7 @@
 package com.marti.humanresbackend.unittests;
 
 import com.marti.humanresbackend.models.entities.User;
+import com.marti.humanresbackend.models.enums.Role;
 import com.marti.humanresbackend.services.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -19,14 +20,14 @@ class UserUnitTest {
 
     @Test
     void createUserShouldWork() {
-        User user = new User("example@email.com","examplePass","Full Name", "Programmer");
+        User user = new User("example@email.com","examplePass","Full Name", "Programmer", "Varna", 22, Role.User);
         User save = userService.createUser(user);
         assert save.getId()!=null;
     }
     @Test
     void createUserShouldThrowException() {
         Assertions.assertThrows(RuntimeException.class,() -> {
-            User user = new User("","examplePass","Full Name", "Programmer");
+            User user = new User("","examplePass","Full Name", "Programmer", "Varna", 22, Role.User);
             userService.createUser(user);
         });
     }

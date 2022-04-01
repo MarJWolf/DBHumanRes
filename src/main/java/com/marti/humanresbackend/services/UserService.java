@@ -19,7 +19,14 @@ public class UserService {
     }
 
     public User createUser(User u){
+        if(u.getEmail().isEmpty()){
+            throw new RuntimeException("Email should not be empty!");
+        }
         return userRep.save(u);
+    }
+
+    public User getUserByEmail(String email){
+        return userRep.findByEmail(email);
     }
 
     public List<User> getAll(){

@@ -25,6 +25,8 @@ public class WorkLeaveService {
         return workRep.findAllByUserIdEquals(id);
     }
 
+    public List<WorkLeave> getAll() {return workRep.findAll();}
+
     public void updateWorkLeave(WorkLeave w){
         workRep.save(w);
     }
