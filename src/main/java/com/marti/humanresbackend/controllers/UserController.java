@@ -1,7 +1,8 @@
 package com.marti.humanresbackend.controllers;
 
-
+import com.marti.humanresbackend.models.DTO.UserDTO;
 import com.marti.humanresbackend.models.entities.User;
+import com.marti.humanresbackend.models.views.UpdateUserView;
 import com.marti.humanresbackend.models.views.UserView;
 import com.marti.humanresbackend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class UserController {
         return userService.getAll();
     }
 
+    @GetMapping(path = "allSimplified")
+    public List<UserDTO> getAllSimplified(){return userService.getAllSimplified();}
+
     @GetMapping(path = "one")
     public User getOne(@RequestParam String email) {return userService.getUserByEmail(email);}
 
@@ -42,9 +46,13 @@ public class UserController {
     }
 
     @PutMapping(path = "update")
-    public void updateUser(@RequestBody User u){
+    public void updateUser(@RequestBody UpdateUserView uuv){ userService.updateUser(uuv);}
 
-        userService.updateUser(u);
+    @GetMapping(path = "byId")
+    public User getById(@RequestParam Long Id) { return userService.getUserById(Id);}
+
+    @GetMapping(path = "EditById")
+    public UpdateUserView getUUV(Long Id){
+        return userService.getUpdateUserView(Id);
     }
-
 }

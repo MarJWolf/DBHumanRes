@@ -19,10 +19,12 @@ public class Manager {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    private User manager;
+    @OneToOne(cascade = CascadeType.DETACH)
+    private User userManager;
 
-    @OneToMany()
+    @OneToMany(cascade = CascadeType.DETACH)
     @JoinColumn(name="manager_id")
     private List<User> allWorkers = new ArrayList<>();
+
+    public Manager(User u){this.userManager = u;}
 }

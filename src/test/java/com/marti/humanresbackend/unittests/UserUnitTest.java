@@ -10,8 +10,6 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY,connection = EmbeddedDatabaseConnection.H2)
 class UserUnitTest {
@@ -20,14 +18,15 @@ class UserUnitTest {
 
     @Test
     void createUserShouldWork() {
-        User user = new User("example@email.com","examplePass","Full Name", "Programmer", "Varna", 22, Role.User);
+        User user = new User("example@email.com","examplePass","Full Name", "Programmer", "Varna", 22, Role.User, null);
         User save = userService.createUser(user);
         assert save.getId()!=null;
     }
     @Test
     void createUserShouldThrowException() {
         Assertions.assertThrows(RuntimeException.class,() -> {
-            User user = new User("","examplePass","Full Name", "Programmer", "Varna", 22, Role.User);
+            User user = new User("","examplePass","Full Name", "Programmer", "Varna", 22, Role.User, null
+            );
             userService.createUser(user);
         });
     }

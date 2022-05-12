@@ -1,8 +1,8 @@
 package com.marti.humanresbackend.controllers;
 
+import com.marti.humanresbackend.models.DTO.WorkLeaveDTO;
 import com.marti.humanresbackend.models.entities.WorkLeave;
-import com.marti.humanresbackend.models.entities.WorkLeave;
-import com.marti.humanresbackend.models.views.WorkLeaveView;
+import com.marti.humanresbackend.models.views.UpdateWorkLeaveView;
 import com.marti.humanresbackend.models.views.WorkLeaveView;
 import com.marti.humanresbackend.services.WorkLeaveService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +23,7 @@ public class WorkLeaveController {
 
     @PostMapping(path = "create")
     public WorkLeave createLeave(@RequestBody WorkLeaveView wv){
-        WorkLeave wlv = new WorkLeave(wv);
-        return workLeaveService.createLeave(wlv);
+        return workLeaveService.createLeave(new WorkLeave(wv));
     }
 
     @GetMapping(path = "all")
@@ -34,13 +33,20 @@ public class WorkLeaveController {
 
     @GetMapping(path = "byUser")
     public List<WorkLeave> getAllByUser(Long userId){
-        return workLeaveService.getByUser(userId);
+        return workLeaveService.getAllByUser(userId);
+    }
+
+    @GetMapping(path = "byUserSimplified")
+    public List<WorkLeaveDTO> getAllByUserSimplified(Long userId){
+        return workLeaveService.getAllByUserSimplified(userId);
     }
 
     @PutMapping(path = "update")
-    public void updateWorkLeave(@RequestBody WorkLeave wv){
-        workLeaveService.updateWorkLeave(wv);
+    public void updateWorkLeave(@RequestBody UpdateWorkLeaveView uwv){
+        workLeaveService.updateWorkLeave(uwv);
     }
 
-
+    @GetMapping(path = "edit")
+    public UpdateWorkLeaveView getById(Long Id){
+        return workLeaveService.getUpdateWorkLeaveView(Id);}
 }

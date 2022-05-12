@@ -2,6 +2,7 @@ package com.marti.humanresbackend.models.entities;
 
 import com.marti.humanresbackend.models.enums.Status;
 import com.marti.humanresbackend.models.enums.Type;
+import com.marti.humanresbackend.models.views.UpdateWorkLeaveView;
 import com.marti.humanresbackend.models.views.WorkLeaveView;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,5 +45,15 @@ public class WorkLeave {
         this.fillDate = LocalDate.now();
         this.statusManager = wv.statusManager();
         this.statusHr = wv.statusHr();
+    }
+
+    public static WorkLeave updateWorkLeave(WorkLeave wl, UpdateWorkLeaveView uwlv){
+        wl.setType(uwlv.type());
+        wl.setStartDate(uwlv.startDate());
+        wl.setEndDate(uwlv.endDate());
+        wl.setFillDate(uwlv.fillDate());
+        wl.setStatusHr(uwlv.statusHr());
+        wl.setStatusManager(uwlv.statusManager());
+        return wl;
     }
 }
