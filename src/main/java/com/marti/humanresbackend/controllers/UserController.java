@@ -36,7 +36,7 @@ public class UserController {
     @GetMapping(path = "allSimplified")
     public List<UserDTO> getAllSimplified(){return userService.getAllSimplified();}
 
-    @GetMapping(path = "one")
+    @GetMapping(path = "byEmail")
     public User getOne(@RequestParam String email) {return userService.getUserByEmail(email);}
 
     @PutMapping(path = "delete")
