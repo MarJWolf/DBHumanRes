@@ -23,7 +23,7 @@ public class Manager {
     private User userManager;
 
     @OneToMany(cascade = CascadeType.DETACH)
-    @JoinColumn(name="manager_id")
+    @JoinColumn(name="managerId")
     private List<User> allWorkers = new ArrayList<>();
 
     public Manager(User u){this.userManager = u;}

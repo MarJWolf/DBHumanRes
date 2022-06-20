@@ -26,6 +26,10 @@ public class ManagerService {
             return manRep.findById(Id).get();
     }
 
+    public Manager getManagerByUserManager(Long Id){
+         return manRep.findManagerByUserManager(userRep.getById(Id));
+    }
+
     public void updateManager(ManagerView mv){
         Manager man = manRep.getById(mv.id());
         man.setAllWorkers(userRep.findAllById(mv.allUsers()));

@@ -26,15 +26,15 @@ public class WorkLeave {
     private LocalDate endDate;
     private LocalDate fillDate;
     private Status statusManager;
-    private Status statusHr;
+    private Status statusAdmin;
 
-    public WorkLeave(Type type, LocalDate startDate, LocalDate endDate, Status statusManager, Status statusHr) {
+    public WorkLeave(Type type, LocalDate startDate, LocalDate endDate, Status statusManager, Status statusAdmin) {
         this.type = type;
         this.startDate = startDate;
         this.endDate = endDate;
         this.fillDate = LocalDate.now();
         this.statusManager = statusManager;
-        this.statusHr = statusHr;
+        this.statusAdmin = statusAdmin;
     }
 
     public WorkLeave(WorkLeaveView wv) {
@@ -44,7 +44,7 @@ public class WorkLeave {
         this.endDate = wv.endDate();
         this.fillDate = LocalDate.now();
         this.statusManager = wv.statusManager();
-        this.statusHr = wv.statusHr();
+        this.statusAdmin = wv.statusAdmin();
     }
 
     public static WorkLeave updateWorkLeave(WorkLeave wl, UpdateWorkLeaveView uwlv){
@@ -52,7 +52,7 @@ public class WorkLeave {
         wl.setStartDate(uwlv.startDate());
         wl.setEndDate(uwlv.endDate());
         wl.setFillDate(uwlv.fillDate());
-        wl.setStatusHr(uwlv.statusHr());
+        wl.setStatusAdmin(uwlv.statusAdmin());
         wl.setStatusManager(uwlv.statusManager());
         return wl;
     }

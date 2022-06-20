@@ -15,21 +15,23 @@ import java.time.LocalDate;
 public class WorkLeaveDTO {
     private Long Id;
     private Long userId;
+    private String userName;
     private Type type;
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalDate fillDate;
     private Status statusManager;
-    private Status statusHr;
+    private Status statusAdmin;
 
-    public WorkLeaveDTO(WorkLeave wl){
+    public WorkLeaveDTO(WorkLeave wl, String username){
         this.Id = wl.getId();
         this.userId = wl.getUserId();
+        this.userName = username;
         this.type = wl.getType();
         this.startDate = wl.getStartDate();
         this.endDate = wl.getEndDate();
         this.fillDate = wl.getFillDate();
         this.statusManager = wl.getStatusManager();
-        this.statusHr = wl.getStatusHr();
+        this.statusAdmin = wl.getStatusAdmin();
     }
 }

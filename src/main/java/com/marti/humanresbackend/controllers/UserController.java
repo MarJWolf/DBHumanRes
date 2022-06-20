@@ -39,6 +39,11 @@ public class UserController {
     @GetMapping(path = "byEmail")
     public User getOne(@RequestParam String email) {return userService.getUserByEmail(email);}
 
+    @GetMapping(path = "byManagerId")
+    public List<User> getByManagerId(@RequestParam Long id){
+        return userService.getAllByManager(id);
+    }
+
     @PutMapping(path = "delete")
     public void deleteUser(@RequestBody User u){
         u.setJobTitle(null);
@@ -52,7 +57,7 @@ public class UserController {
     public User getById(@RequestParam Long Id) { return userService.getUserById(Id);}
 
     @GetMapping(path = "EditById")
-    public UpdateUserView getUUV(Long Id){
+    public UpdateUserView getUUV(@RequestParam Long Id){
         return userService.getUpdateUserView(Id);
     }
 }

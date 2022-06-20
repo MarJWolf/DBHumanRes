@@ -1,11 +1,15 @@
 package com.marti.humanresbackend.controllers;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import com.marti.humanresbackend.models.DTO.WorkLeaveDTO;
 import com.marti.humanresbackend.models.entities.WorkLeave;
+import com.marti.humanresbackend.models.enums.Status;
 import com.marti.humanresbackend.models.views.UpdateWorkLeaveView;
 import com.marti.humanresbackend.models.views.WorkLeaveView;
 import com.marti.humanresbackend.services.WorkLeaveService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,27 +30,54 @@ public class WorkLeaveController {
         return workLeaveService.createLeave(new WorkLeave(wv));
     }
 
+    @PutMapping(path = "changeStatus")
+    public void changeStatus(@RequestParam Long workleaveId, Status status){
+        workLeaveService.updateStatus(workleaveId, status);
+        System.out.println(workleaveId);
+    }
+
     @GetMapping(path = "all")
     public List<WorkLeave> getAll(){
         return workLeaveService.getAll();
     }
 
     @GetMapping(path = "byUser")
-    public List<WorkLeave> getAllByUser(Long userId){
+    public List<WorkLeave> getAllByUser(@RequestParam Long userId){
         return workLeaveService.getAllByUser(userId);
     }
 
     @GetMapping(path = "byUserSimplified")
-    public List<WorkLeaveDTO> getAllByUserSimplified(Long userId){
+    public List<WorkLeaveDTO> getAllByUserSimplified(@RequestParam Long userId){
         return workLeaveService.getAllByUserSimplified(userId);
+    }
+
+    @GetMapping(path = "byUserAndAdminStatSimplified")
+    public List<WorkLeaveDTO> getAllByUserAndAdminStatSimplified(@RequestParam Long userId, Status status){
+        return workLeaveService.getAllByUserAndAdminStatSimplified(userId, status);
+    }
+
+    @GetMapping(path = "pendingWithoutManager")
+    public List<WorkLeaveDTO> pendingWithoutManager(){
+        return workLeaveService.getAllPendingWithoutManager();
+    }
+
+    @GetMapping(path = "byUserAndMStatSimplified")
+    public List<WorkLeaveDTO> getAllByUserAndMStatSimplified(@RequestParam Long userId, Status status){
+        return workLeaveService.getAllByUserAndMStatSimplified(userId, status);
+    }
+
+    @GetMapping(path = "byAdminStatSimplified")
+    public List<WorkLeaveDTO> getAllByAdminStatSimplified(@RequestParam Status status){
+        return workLeaveService.getAllByAdminStatSimplified(status);
     }
 
     @PutMapping(path = "update")
     public void updateWorkLeave(@RequestBody UpdateWorkLeaveView uwv){
+        System.out.println(uwv);
         workLeaveService.updateWorkLeave(uwv);
     }
 
     @GetMapping(path = "edit")
-    public UpdateWorkLeaveView getById(Long Id){
+    public UpdateWorkLeaveView getById(@RequestParam Long Id){
         return workLeaveService.getUpdateWorkLeaveView(Id);}
 }

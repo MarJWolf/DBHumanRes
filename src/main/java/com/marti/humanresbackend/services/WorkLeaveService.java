@@ -1,23 +1,39 @@
 package com.marti.humanresbackend.services;
 
 import com.marti.humanresbackend.models.DTO.WorkLeaveDTO;
+import com.marti.humanresbackend.models.entities.User;
 import com.marti.humanresbackend.models.entities.WorkLeave;
+import com.marti.humanresbackend.models.enums.Status;
 import com.marti.humanresbackend.models.views.UpdateWorkLeaveView;
 import com.marti.humanresbackend.repositories.WorkLeaveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class WorkLeaveService {
 
     private final WorkLeaveRepository workRep;
+    private final UserService userService;
+    private final ManagerService manService;
 
     @Autowired
-    public WorkLeaveService(WorkLeaveRepository workRep) {
+    public WorkLeaveService(WorkLeaveRepository workRep, UserService userService, ManagerService manService) {
         this.workRep = workRep;
+        this.userService = userService;
+        this.manService = manService;
+    }
+
+    private List<WorkLeaveDTO> createWLDTO(List<WorkLeave> leaves){
+        List<WorkLeaveDTO> leavesFinal = new ArrayList<>();
+        for (WorkLeave leave : leaves) {
+            leavesFinal.add(new WorkLeaveDTO(leave, userService.getUserById(leave.getUserId()).getFullName()));
+        }
+        return leavesFinal;
     }
 
     public WorkLeave createLeave(WorkLeave w){
@@ -32,7 +48,35 @@ public class WorkLeaveService {
 
     public List<WorkLeaveDTO> getAllByUserSimplified(Long userId){
         List<WorkLeave> leaves = workRep.findAllByUserIdEquals(userId);
-        return leaves.stream().map(WorkLeaveDTO::new).collect(Collectors.toList());
+        return createWLDTO(leaves);
+    }
+
+    public List<WorkLeaveDTO> getAllByUserAndAdminStatSimplified(Long userId, Status stat){
+        List<WorkLeave> leaves = workRep.findAllByUserIdEqualsAndStatusAdmin(userId, stat);
+        return createWLDTO(leaves);
+    }
+
+    public List<WorkLeaveDTO> getAllByUserAndMStatSimplified(Long userId, Status stat){
+        List<User> subUsers= manService.getManagerByUserManager(userId).getAllWorkers();
+        List<WorkLeave> leaves =  new ArrayList<>();
+        for (User subUser : subUsers) {
+            leaves.addAll(workRep.findAllByUserIdEqualsAndStatusManager(subUser.getId(), stat));
+        }
+        return createWLDTO(leaves);
+    }
+
+    public List<WorkLeaveDTO> getAllPendingWithoutManager(){
+        List<User> noSubUsers = userService.getAllByManager(null);
+        List<WorkLeave> leaves =  new ArrayList<>();
+        for (User subUser : noSubUsers) {
+            leaves.addAll(workRep.findAllByUserIdEqualsAndStatusManager(subUser.getId(), Status.Pending));
+        }
+        return createWLDTO(leaves);
+    }
+
+    public List<WorkLeaveDTO> getAllByAdminStatSimplified(Status stat){
+        List<WorkLeave> leaves = workRep.findByStatusAdminEqualsAndNoManager(stat);
+        return createWLDTO(leaves);
     }
 
     public void updateWorkLeave(WorkLeave w){
@@ -50,6 +94,20 @@ public class WorkLeaveService {
 
     public UpdateWorkLeaveView getUpdateWorkLeaveView(Long Id) {
         WorkLeave u = getById(Id);
-        return new UpdateWorkLeaveView(u.getId(), u.getUserId(), u.getType(), u.getStartDate(), u.getEndDate(), u.getFillDate(), u.getStatusManager(), u.getStatusHr());
+        return new UpdateWorkLeaveView(u.getId(), u.getUserId(), u.getType(), u.getStartDate(), u.getEndDate(), u.getFillDate(), u.getStatusManager(), u.getStatusAdmin());
+    }
+
+    public void updateStatus(Long WorkleaveId, Status status){
+        WorkLeave workLeave = getById(WorkleaveId);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if(auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("Manager"))){
+            workLeave.setStatusManager(status);
+        }else if(auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("Admin"))){
+            workLeave.setStatusAdmin(status);
+            if(userService.getUserById(workLeave.getUserId()).getManagerId() == null){
+                workLeave.setStatusManager(status);
+            }
+        }
+        updateWorkLeave(workLeave);
     }
 }

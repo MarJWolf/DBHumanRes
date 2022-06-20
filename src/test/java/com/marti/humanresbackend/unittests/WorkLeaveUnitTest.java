@@ -11,7 +11,6 @@ import com.marti.humanresbackend.repositories.UserRepository;
 import com.marti.humanresbackend.repositories.WorkLeaveRepository;
 import com.marti.humanresbackend.services.UserService;
 import com.marti.humanresbackend.services.WorkLeaveService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +53,7 @@ public class WorkLeaveUnitTest {
         WorkLeave u = new WorkLeave(Type.Paid, LocalDate.now(), LocalDate.now().plusDays(5L), Status.Pending, Status.Pending);
         u.setUserId(user.getId());
         workLeaveService.createLeave(u);
-        workLeaveService.updateWorkLeave(new UpdateWorkLeaveView(u.getId(), u.getUserId(), u.getType(), u.getStartDate(), u.getEndDate(), u.getFillDate(), Status.Confirmed, u.getStatusHr()));
+        workLeaveService.updateWorkLeave(new UpdateWorkLeaveView(u.getId(), u.getUserId(), u.getType(), u.getStartDate(), u.getEndDate(), u.getFillDate(), Status.Confirmed, u.getStatusAdmin()));
         WorkLeave wl = workLeaveService.getById(u.getId());
         assert wl.getStatusManager().equals(Status.Confirmed);
     }

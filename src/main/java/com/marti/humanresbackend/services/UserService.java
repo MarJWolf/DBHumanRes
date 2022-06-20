@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,17 +39,25 @@ public class UserService {
     }
 
     public User getUserByEmail(String email){
-        if (userRep.findByEmail(email).isEmpty())
+        Optional<User> byEmail = userRep.findByEmail(email);
+        if (byEmail.isEmpty())
             throw new RuntimeException("A user with such email does not exist!");
         else
-            return userRep.findByEmail(email).get();
+            return byEmail.get();
+    }
+
+
+    public User getUserByEmailOptional(String email){
+        Optional<User> byEmail = userRep.findByEmail(email);
+        return byEmail.orElse(null);
     }
 
     public User getUserById(Long Id){
-        if(userRep.findById(Id).isEmpty())
+        Optional<User> byId = userRep.findById(Id);
+        if(byId.isEmpty())
             throw new RuntimeException("A user with such Id does not exist!");
         else
-            return userRep.findById(Id).get();
+            return byId.get();
     }
 
     public List<User> getAll(){
@@ -59,6 +68,11 @@ public class UserService {
         List<User> users = userRep.findAllByJobTitleIsNotNull();
         return users.stream().map(UserDTO::new).collect(Collectors.toList());
     }
+
+    public List<User> getAllByManager(Long id){
+        return userRep.findByManagerId(id);
+    }
+
 
     //used for "deleting" user
     public void updateUser(User u){
@@ -81,7 +95,7 @@ public class UserService {
 
     public UpdateUserView getUpdateUserView(Long Id) {
         User u = getUserById(Id);
-        return new UpdateUserView(u.getId(), u.getEmail(), u.getPass(), u.getFullName(), u.getJobTitle(), u.getWorkplace(), u.getPaidDays(), u.getRole(), u.getManager_id());
+        return new UpdateUserView(u.getId(), u.getEmail(), u.getPass(), u.getFullName(), u.getJobTitle(), u.getWorkplace(), u.getPaidDays(), u.getRole(), u.getManagerId());
     }
 
 

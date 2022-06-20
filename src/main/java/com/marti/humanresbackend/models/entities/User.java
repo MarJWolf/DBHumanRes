@@ -32,13 +32,13 @@ public class User {
 
     private Role role;
 
-    private Long manager_id;
+    private Long managerId;
 
     @OneToMany()
     @JoinColumn(name="userId")
     private List<WorkLeave> allWorkleaves = new ArrayList<>();
 
-    public User(String email, String pass, String fullName, String jobTitle, String workplace, int paidDays, Role role, Long manager_id) {
+    public User(String email, String pass, String fullName, String jobTitle, String workplace, int paidDays, Role role, Long managerId) {
         this.email = email;
         this.pass = pass;
         this.fullName = fullName;
@@ -46,7 +46,7 @@ public class User {
         this.workplace = workplace;
         this.paidDays = paidDays;
         this.role = role;
-        this.manager_id = manager_id;
+        this.managerId = managerId;
     }
 
     public User(UserView uv) {
@@ -57,7 +57,7 @@ public class User {
         this.workplace = uv.workplace();
         this.paidDays = uv.paidDays();
         this.role = uv.role();
-        this.manager_id = uv.manager_id();
+        this.managerId = uv.manager_id();
     }
 
     public static User updateUser(User u, UpdateUserView uuv){
@@ -68,7 +68,7 @@ public class User {
         u.setWorkplace(uuv.workplace());
         u.setPaidDays(uuv.paidDays());
         u.setRole(uuv.role());
-        u.setManager_id(uuv.manager_id());
+        u.setManagerId(uuv.manager_id());
         return u;
     }
 }
