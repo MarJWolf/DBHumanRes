@@ -41,6 +41,11 @@ public class WorkLeaveController {
         return workLeaveService.getAll();
     }
 
+    @GetMapping(path = "allSimplified")
+    public List<WorkLeaveDTO> getAllSimplified(){
+        return workLeaveService.getAllSimplified();
+    }
+
     @GetMapping(path = "byUser")
     public List<WorkLeave> getAllByUser(@RequestParam Long userId){
         return workLeaveService.getAllByUser(userId);

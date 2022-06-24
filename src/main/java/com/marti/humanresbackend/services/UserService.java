@@ -63,9 +63,17 @@ public class UserService {
     public List<User> getAll(){
         return userRep.findAllByJobTitleIsNotNull();
     }
+    public List<User> getAllInactive(){
+        return userRep.findAllByJobTitleIsNull();
+    }
 
     public List<UserDTO> getAllSimplified(){
         List<User> users = userRep.findAllByJobTitleIsNotNull();
+        return users.stream().map(UserDTO::new).collect(Collectors.toList());
+    }
+
+    public List<UserDTO> getAllInactiveSimplified(){
+        List<User> users = userRep.findAllByJobTitleIsNull();
         return users.stream().map(UserDTO::new).collect(Collectors.toList());
     }
 

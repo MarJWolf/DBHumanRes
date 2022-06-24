@@ -33,8 +33,16 @@ public class UserController {
         return userService.getAll();
     }
 
+    @GetMapping(path = "allInactive")
+    public List<User> getAllInactive(){
+        return userService.getAllInactive();
+    }
+
     @GetMapping(path = "allSimplified")
     public List<UserDTO> getAllSimplified(){return userService.getAllSimplified();}
+
+    @GetMapping(path = "allInactiveSimplified")
+    public List<UserDTO> getAllInactiveSimplified(){return userService.getAllInactiveSimplified();}
 
     @GetMapping(path = "byEmail")
     public User getOne(@RequestParam String email) {return userService.getUserByEmail(email);}

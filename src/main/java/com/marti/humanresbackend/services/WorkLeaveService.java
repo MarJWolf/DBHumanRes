@@ -40,7 +40,10 @@ public class WorkLeaveService {
         return workRep.save(w);
     }
 
-    public List<WorkLeave> getAll() {return workRep.findAll();}
+    public List<WorkLeave> getAll() { return workRep.findAll();}
+    public List<WorkLeaveDTO> getAllSimplified() {
+        List<WorkLeave> leaves = workRep.findAll();
+        return createWLDTO(leaves);}
 
     public List<WorkLeave> getAllByUser(Long id){
         return workRep.findAllByUserIdEquals(id);

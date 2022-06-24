@@ -13,6 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findAllByJobTitleIsNotNull();
 
+    List<User> findAllByJobTitleIsNull();
     Optional<User> findByEmail(String email);
 
     List<User> findByManagerId(Long id);
