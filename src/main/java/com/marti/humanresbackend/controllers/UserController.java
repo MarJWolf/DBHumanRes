@@ -2,6 +2,8 @@ package com.marti.humanresbackend.controllers;
 
 import com.marti.humanresbackend.models.DTO.UserDTO;
 import com.marti.humanresbackend.models.entities.User;
+import com.marti.humanresbackend.models.entities.WorkLeave;
+import com.marti.humanresbackend.models.enums.Status;
 import com.marti.humanresbackend.models.views.UpdateUserView;
 import com.marti.humanresbackend.models.views.UserView;
 import com.marti.humanresbackend.services.UserService;
@@ -52,10 +54,9 @@ public class UserController {
         return userService.getAllByManager(id);
     }
 
-    @PutMapping(path = "delete")
+    @PutMapping(path = "dismiss")
     public void deleteUser(@RequestBody User u){
-        u.setJobTitle(null);
-        userService.updateUser(u);
+        userService.dismissUser(u);
     }
 
     @PutMapping(path = "update")

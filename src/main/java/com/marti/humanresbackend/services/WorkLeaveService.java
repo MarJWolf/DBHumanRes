@@ -4,6 +4,7 @@ import com.marti.humanresbackend.models.DTO.WorkLeaveDTO;
 import com.marti.humanresbackend.models.entities.User;
 import com.marti.humanresbackend.models.entities.WorkLeave;
 import com.marti.humanresbackend.models.enums.Status;
+import com.marti.humanresbackend.models.enums.Type;
 import com.marti.humanresbackend.models.views.UpdateWorkLeaveView;
 import com.marti.humanresbackend.repositories.WorkLeaveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +12,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.*;
 
 @Service
 public class WorkLeaveService {
@@ -20,6 +22,23 @@ public class WorkLeaveService {
     private final WorkLeaveRepository workRep;
     private final UserService userService;
     private final ManagerService manService;
+    private static final Set<LocalDate> HOLIDAYS;
+
+    static {
+        List<LocalDate> dates = List.of(
+                LocalDate.of(2017, 1, 2),
+                LocalDate.of(2017, 1, 16),
+                LocalDate.of(2017, 2, 20),
+                LocalDate.of(2017, 5, 29),
+                LocalDate.of(2017, 7, 4),
+                LocalDate.of(2017, 9, 4),
+                LocalDate.of(2017, 10, 9),
+                LocalDate.of(2017, 11, 10),
+                LocalDate.of(2017, 11, 23),
+                LocalDate.of(2017, 12, 25)
+        );
+        HOLIDAYS = Set.copyOf(dates);
+    }
 
     @Autowired
     public WorkLeaveService(WorkLeaveRepository workRep, UserService userService, ManagerService manService) {
@@ -37,7 +56,28 @@ public class WorkLeaveService {
     }
 
     public WorkLeave createLeave(WorkLeave w){
+        User u = userService.getUserById(w.getUserId());
+        if(w.getType() == Type.Paid){
+            if(getBusinessDays(w) > u.getPaidDays()){
+                throw new RuntimeException("Нямате достатъчно дни!");
+            }
+        }
         return workRep.save(w);
+    }
+
+    private int getBusinessDays(WorkLeave w) {
+        int businessDays = 0;
+        LocalDate d = w.getStartDate();
+        while(!d.isAfter(w.getEndDate())){
+            DayOfWeek dw = d.getDayOfWeek();
+            if (!HOLIDAYS.contains(d)
+                    && dw != DayOfWeek.SATURDAY
+                    && dw != DayOfWeek.SUNDAY) {
+                businessDays++;
+            }
+            d = d.plusDays(1);
+        }
+        return businessDays;
     }
 
     public List<WorkLeave> getAll() { return workRep.findAll();}
@@ -100,6 +140,15 @@ public class WorkLeaveService {
         return new UpdateWorkLeaveView(u.getId(), u.getUserId(), u.getType(), u.getStartDate(), u.getEndDate(), u.getFillDate(), u.getStatusManager(), u.getStatusAdmin());
     }
 
+    public void cancelWorkleave(Long WorkleaveId, Status status){
+        WorkLeave workLeave = getById(WorkleaveId);
+        if(status == Status.Cancelled) {
+            workLeave.setStatusAdmin(Status.Cancelled);
+            workLeave.setStatusManager(Status.Cancelled);
+        }
+        updateWorkLeave(workLeave);
+    }
+
     public void updateStatus(Long WorkleaveId, Status status){
         WorkLeave workLeave = getById(WorkleaveId);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -111,6 +160,16 @@ public class WorkLeaveService {
                 workLeave.setStatusManager(status);
             }
         }
+        takeDays(workLeave);
         updateWorkLeave(workLeave);
+    }
+
+    private void takeDays(WorkLeave workLeave) {
+        if(workLeave.getStatusAdmin() == Status.Confirmed && workLeave.getStatusManager() == Status.Confirmed && workLeave.getType() == Type.Paid)
+        {
+            User u = userService.getUserById(workLeave.getUserId());
+            u.setPaidDays(u.getPaidDays() - getBusinessDays(workLeave));
+            userService.updateUser(u);
+        }
     }
 }

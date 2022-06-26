@@ -28,11 +28,11 @@ public class WorkLeave {
     private Status statusManager;
     private Status statusAdmin;
 
-    public WorkLeave(Type type, LocalDate startDate, LocalDate endDate, Status statusManager, Status statusAdmin) {
+    public WorkLeave(Type type, LocalDate startDate,LocalDate fillDate, LocalDate endDate, Status statusManager, Status statusAdmin) {
         this.type = type;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.fillDate = LocalDate.now();
+        this.fillDate = fillDate;
         this.statusManager = statusManager;
         this.statusAdmin = statusAdmin;
     }
@@ -42,7 +42,7 @@ public class WorkLeave {
         this.type = wv.type();
         this.startDate = wv.startDate();
         this.endDate = wv.endDate();
-        this.fillDate = LocalDate.now();
+        this.fillDate = wv.fillDate();
         this.statusManager = wv.statusManager();
         this.statusAdmin = wv.statusAdmin();
     }

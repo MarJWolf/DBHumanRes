@@ -57,7 +57,7 @@ public class User {
         this.workplace = uv.workplace();
         this.paidDays = uv.paidDays();
         this.role = uv.role();
-        this.managerId = uv.manager_id();
+        this.managerId = uv.managerId();
     }
 
     public static User updateUser(User u, UpdateUserView uuv){
@@ -68,7 +68,7 @@ public class User {
         u.setWorkplace(uuv.workplace());
         u.setPaidDays(uuv.paidDays());
         u.setRole(uuv.role());
-        u.setManagerId(uuv.manager_id());
+        u.setManagerId(uuv.managerId());
         return u;
     }
 }

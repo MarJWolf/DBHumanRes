@@ -4,7 +4,9 @@ package com.marti.humanresbackend.services;
 import com.marti.humanresbackend.models.DTO.UserDTO;
 import com.marti.humanresbackend.models.entities.Manager;
 import com.marti.humanresbackend.models.entities.User;
+import com.marti.humanresbackend.models.entities.WorkLeave;
 import com.marti.humanresbackend.models.enums.Role;
+import com.marti.humanresbackend.models.enums.Status;
 import com.marti.humanresbackend.models.views.UpdateUserView;
 import com.marti.humanresbackend.repositories.ManagerRepository;
 import com.marti.humanresbackend.repositories.UserRepository;
@@ -82,7 +84,6 @@ public class UserService {
     }
 
 
-    //used for "deleting" user
     public void updateUser(User u){
         userRep.save(u);
     }
@@ -107,5 +108,16 @@ public class UserService {
     }
 
 
-
+    public void dismissUser(User u) {
+        u.setJobTitle(null);
+        for (WorkLeave workleave : u.getAllWorkleaves()) {
+            if(workleave.getStatusAdmin() == Status.Pending || workleave.getStatusManager() == Status.Pending)
+            {
+                workleave.setStatusManager(Status.Cancelled);
+                workleave.setStatusAdmin(Status.Cancelled);
+            }
+        }
+        u.setManagerId(null);
+        updateUser(u);
+    }
 }

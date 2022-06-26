@@ -27,8 +27,9 @@ public class AuthenticationManagerImplementation implements AuthenticationManage
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         log.info(authentication.getName() + "  " + authentication.getCredentials());
+
         User u = userService.getUserByEmailOptional(authentication.getName());
-        if(u != null && Objects.equals(u.getPass(), authentication.getCredentials().toString()))
+        if(u != null && Objects.equals(u.getPass(), authentication.getCredentials().toString()) && u.getJobTitle() != null)
         {
             return new UsernamePasswordAuthenticationToken(u.getId(), u.getPass(), Set.of(new SimpleGrantedAuthority(u.getRole().toString())));
         }

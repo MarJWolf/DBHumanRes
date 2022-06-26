@@ -32,8 +32,8 @@ public class InitialDataConfig implements ApplicationRunner {
         userService.createUser(new User("example2@email.com", "password12", "Kate second Peterson", "junior developer", "Varna", 22, Role.User, 1L));
         userService.createUser(new User("example3@email.com", "password13", "Kate third Peterson", "junior developer", "Varna", 27, Role.Admin, null));
         userService.createUser(new User("example4@email.com", "password14", "Kate fourth Peterson", null, "Varna", 27, Role.Admin, null));
-        workService.createLeave(new WorkLeave(new WorkLeaveView(1L, Type.Paid, LocalDate.now(),LocalDate.now(),LocalDate.now(), Status.Pending, Status.Pending)));
-        workService.createLeave(new WorkLeave(new WorkLeaveView(2L, Type.Paid, LocalDate.now(),LocalDate.now(),LocalDate.now(), Status.Pending, Status.Pending)));
-        workService.createLeave(new WorkLeave(new WorkLeaveView(3L, Type.Paid, LocalDate.now(),LocalDate.now(),LocalDate.now(), Status.Pending, Status.Confirmed)));
+        workService.createLeave(new WorkLeave(new WorkLeaveView(1L, Type.Paid, LocalDate.of(2022,6,27),LocalDate.of(2022,6,27),LocalDate.of(2022,6,27), Status.Pending, Status.Pending)));
+        workService.createLeave(new WorkLeave(new WorkLeaveView(2L, Type.Paid, LocalDate.of(2022,6,27),LocalDate.of(2022,6,27),LocalDate.of(2022,6,27), Status.Pending, Status.Pending)));
+        workService.createLeave(new WorkLeave(new WorkLeaveView(3L, Type.Paid, LocalDate.of(2022,6,27),LocalDate.of(2022,6,27),LocalDate.of(2022,6,27), Status.Pending, Status.Confirmed)));
     }
 }

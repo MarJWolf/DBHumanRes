@@ -1,6 +1,5 @@
 package com.marti.humanresbackend.controllers;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
 import com.marti.humanresbackend.models.DTO.WorkLeaveDTO;
 import com.marti.humanresbackend.models.entities.WorkLeave;
 import com.marti.humanresbackend.models.enums.Status;
@@ -8,8 +7,6 @@ import com.marti.humanresbackend.models.views.UpdateWorkLeaveView;
 import com.marti.humanresbackend.models.views.WorkLeaveView;
 import com.marti.humanresbackend.services.WorkLeaveService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,7 +30,11 @@ public class WorkLeaveController {
     @PutMapping(path = "changeStatus")
     public void changeStatus(@RequestParam Long workleaveId, Status status){
         workLeaveService.updateStatus(workleaveId, status);
-        System.out.println(workleaveId);
+    }
+
+    @PutMapping(path = "cancelWorkleave")
+    public void cancelWorkLeave(@RequestParam Long workleaveId, Status status){
+        workLeaveService.cancelWorkleave(workleaveId, status);
     }
 
     @GetMapping(path = "all")
@@ -78,7 +79,6 @@ public class WorkLeaveController {
 
     @PutMapping(path = "update")
     public void updateWorkLeave(@RequestBody UpdateWorkLeaveView uwv){
-        System.out.println(uwv);
         workLeaveService.updateWorkLeave(uwv);
     }
 
