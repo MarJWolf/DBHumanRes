@@ -65,7 +65,7 @@ public class WorkLeaveService {
         return workRep.save(w);
     }
 
-    private int getBusinessDays(WorkLeave w) {
+    public int getBusinessDays(WorkLeave w) {
         int businessDays = 0;
         LocalDate d = w.getStartDate();
         while(!d.isAfter(w.getEndDate())){
@@ -167,6 +167,7 @@ public class WorkLeaveService {
     private void takeDays(WorkLeave workLeave) {
         if(workLeave.getStatusAdmin() == Status.Confirmed && workLeave.getStatusManager() == Status.Confirmed && workLeave.getType() == Type.Paid)
         {
+//            todo: check if enough days left
             User u = userService.getUserById(workLeave.getUserId());
             u.setPaidDays(u.getPaidDays() - getBusinessDays(workLeave));
             userService.updateUser(u);

@@ -63,11 +63,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors()
                 .and().formLogin()
                 .successHandler(this::onAuthenticationSuccess)
-                .failureHandler((request, response, exception) -> {
-                    response.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid credentials!");
-                })
+                .failureHandler((request, response, exception) -> response.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid credentials!"))
                 .and().authorizeRequests().antMatchers("/login").permitAll()
-                .anyRequest().authenticated();
+                .anyRequest().permitAll();
         
     }
 }
