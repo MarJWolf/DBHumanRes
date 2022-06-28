@@ -25,10 +25,13 @@ public class User {
     private String pass;
 
     private String fullName;
+    //TODO: otdelni tablici za job title i workplace
     private String jobTitle;
     private String workplace;
 
-    private int paidDays;
+    private int contractPaidDays;
+    private int thisYearPaidDays;
+    private int lastYearPaidDays;
 
     private Role role;
 
@@ -38,17 +41,19 @@ public class User {
     @JoinColumn(name="userId")
     private List<WorkLeave> allWorkleaves = new ArrayList<>();
 
-    public User(String email, String pass, String fullName, String jobTitle, String workplace, int paidDays, Role role, Long managerId) {
+    public User(String email, String pass, String fullName, String jobTitle, String workplace, int contractPaidDays, int thisYearPaidDays, int lastYearPaidDays, Role role, Long managerId) {
         this.email = email;
         this.pass = pass;
         this.fullName = fullName;
         this.jobTitle = jobTitle;
         this.workplace = workplace;
-        this.paidDays = paidDays;
+        this.contractPaidDays = contractPaidDays;
+        this.thisYearPaidDays = thisYearPaidDays;
+        this.lastYearPaidDays = lastYearPaidDays;
         this.role = role;
         this.managerId = managerId;
     }
-
+//TODO: continue paiddays implementation
     public User(UserView uv) {
         this.email = uv.email();
         this.pass = uv.pass();
