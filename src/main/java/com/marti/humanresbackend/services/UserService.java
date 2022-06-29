@@ -2,14 +2,11 @@ package com.marti.humanresbackend.services;
 
 
 import com.marti.humanresbackend.models.DTO.UserDTO;
-import com.marti.humanresbackend.models.entities.Manager;
-import com.marti.humanresbackend.models.entities.User;
-import com.marti.humanresbackend.models.entities.WorkLeave;
+import com.marti.humanresbackend.models.entities.*;
 import com.marti.humanresbackend.models.enums.Role;
 import com.marti.humanresbackend.models.enums.Status;
 import com.marti.humanresbackend.models.views.UpdateUserView;
-import com.marti.humanresbackend.repositories.ManagerRepository;
-import com.marti.humanresbackend.repositories.UserRepository;
+import com.marti.humanresbackend.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,13 +19,20 @@ public class UserService {
 
     private final UserRepository userRep;
     private final ManagerRepository manRep;
+    private final JobTitleRepository jobRep;
+    private final WorkplaceRepository workRep;
+    private final CompanyInfoRepository compRep;
 
     @Autowired
-    public UserService(UserRepository userRep, ManagerRepository manRep) {
+    public UserService(UserRepository userRep, ManagerRepository manRep, JobTitleRepository jobRep, WorkplaceRepository workRep, CompanyInfoRepository compRep) {
         this.userRep = userRep;
         this.manRep = manRep;
+        this.jobRep = jobRep;
+        this.workRep = workRep;
+        this.compRep = compRep;
     }
 
+    //user
     public User createUser(User u){
         if(u.getEmail().isEmpty()){
             throw new RuntimeException("Email should not be empty!");
@@ -63,19 +67,19 @@ public class UserService {
     }
 
     public List<User> getAll(){
-        return userRep.findAllByJobTitleIsNotNull();
+        return userRep.findAllByJobTitleIdIsNotNull();
     }
     public List<User> getAllInactive(){
-        return userRep.findAllByJobTitleIsNull();
+        return userRep.findAllByJobTitleIdIsNull();
     }
 
     public List<UserDTO> getAllSimplified(){
-        List<User> users = userRep.findAllByJobTitleIsNotNull();
+        List<User> users = userRep.findAllByJobTitleIdIsNotNull();
         return users.stream().map(UserDTO::new).collect(Collectors.toList());
     }
 
     public List<UserDTO> getAllInactiveSimplified(){
-        List<User> users = userRep.findAllByJobTitleIsNull();
+        List<User> users = userRep.findAllByJobTitleIdIsNull();
         return users.stream().map(UserDTO::new).collect(Collectors.toList());
     }
 
@@ -104,12 +108,12 @@ public class UserService {
 
     public UpdateUserView getUpdateUserView(Long Id) {
         User u = getUserById(Id);
-        return new UpdateUserView(u.getId(), u.getEmail(), u.getPass(), u.getFullName(), u.getJobTitle(), u.getWorkplace(), u.getPaidDays(), u.getRole(), u.getManagerId());
+        return new UpdateUserView(u.getId(), u.getEmail(), u.getPass(), u.getFullName(), u.getJobTitleId(), u.getWorkplaceId(), u.getContractPaidDays(), u.getThisYearPaidDays(), u.getLastYearPaidDays(), u.getRole(), u.getManagerId());
     }
 
 
     public void dismissUser(User u) {
-        u.setJobTitle(null);
+        u.setJobTitleId(null);
         for (WorkLeave workleave : u.getAllWorkleaves()) {
             if(workleave.getStatusAdmin() == Status.Pending || workleave.getStatusManager() == Status.Pending)
             {
@@ -119,5 +123,49 @@ public class UserService {
         }
         u.setManagerId(null);
         updateUser(u);
+    }
+
+
+    //job
+
+    public void createJobTitle(String name){
+        jobRep.save(new JobTitle(name));
+    }
+
+    public void updateJobTitle(Long Id, String name){
+        JobTitle jt = jobRep.getById(Id);
+        jt.setJobTitle(name);
+        jobRep.save(jt);
+    }
+
+    public void deleteJobTitle(Long Id){
+        jobRep.delete(jobRep.getById(Id));
+    }
+
+    // workplace
+
+    public void createWorkplace(String name){
+        workRep.save(new Workplace(name));
+    }
+
+    public void updateWorkplace(Long Id, String name){
+        Workplace wp = workRep.getById(Id);
+        wp.setWorklplace(name);
+        workRep.save(wp);
+    }
+
+    public void deleteWorkplace(Long Id){
+        workRep.delete(workRep.getById(Id));
+    }
+
+    //companyInfo
+
+    public void createCompanyInfo(String name, String CEOname){ compRep.save(new CompanyInfo(name, CEOname)); }
+
+    public void updateCompanyInfo(String name, String CEOname){
+        CompanyInfo compInfo = compRep.getById(1L);
+        compInfo.setCompanyName(name);
+        compInfo.setCompanyCEOName(CEOname);
+        compRep.save(compInfo);
     }
 }

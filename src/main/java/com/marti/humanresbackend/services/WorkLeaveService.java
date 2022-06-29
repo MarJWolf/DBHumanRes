@@ -58,7 +58,7 @@ public class WorkLeaveService {
     public WorkLeave createLeave(WorkLeave w){
         User u = userService.getUserById(w.getUserId());
         if(w.getType() == Type.Paid){
-            if(getBusinessDays(w) > u.getPaidDays()){
+            if(getBusinessDays(w) > u.getLastYearPaidDays()+u.getThisYearPaidDays()){
                 throw new RuntimeException("Нямате достатъчно дни!");
             }
         }
@@ -167,10 +167,21 @@ public class WorkLeaveService {
     private void takeDays(WorkLeave workLeave) {
         if(workLeave.getStatusAdmin() == Status.Confirmed && workLeave.getStatusManager() == Status.Confirmed && workLeave.getType() == Type.Paid)
         {
-//            todo: check if enough days left
+            int businessDays = getBusinessDays(workLeave);
             User u = userService.getUserById(workLeave.getUserId());
-            u.setPaidDays(u.getPaidDays() - getBusinessDays(workLeave));
-            userService.updateUser(u);
+            if(businessDays > u.getLastYearPaidDays()+u.getThisYearPaidDays()){
+                throw new RuntimeException("Потребителя няма достатъчно дни!");
+            }else{
+                if((u.getLastYearPaidDays() - businessDays) >= 0){
+                    u.setLastYearPaidDays(u.getLastYearPaidDays() - businessDays);
+                }else{
+                    businessDays = businessDays - u.getLastYearPaidDays();
+                    u.setLastYearPaidDays(0);
+                    u.setThisYearPaidDays(u.getThisYearPaidDays() - businessDays);
+                }
+                userService.updateUser(u);
+            }
+
         }
     }
 }

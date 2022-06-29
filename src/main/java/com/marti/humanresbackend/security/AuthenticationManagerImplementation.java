@@ -29,7 +29,7 @@ public class AuthenticationManagerImplementation implements AuthenticationManage
         log.info(authentication.getName() + "  " + authentication.getCredentials());
 
         User u = userService.getUserByEmailOptional(authentication.getName());
-        if(u != null && Objects.equals(u.getPass(), authentication.getCredentials().toString()) && u.getJobTitle() != null)
+        if(u != null && Objects.equals(u.getPass(), authentication.getCredentials().toString()) && u.getJobTitleId() != null)
         {
             return new UsernamePasswordAuthenticationToken(u.getId(), u.getPass(), Set.of(new SimpleGrantedAuthority(u.getRole().toString())));
         }

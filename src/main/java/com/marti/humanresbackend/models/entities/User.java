@@ -23,11 +23,13 @@ public class User {
     @Column(unique=true, nullable = false)
     private String email;
     private String pass;
-
     private String fullName;
-    //TODO: otdelni tablici za job title i workplace
-    private String jobTitle;
-    private String workplace;
+
+    @Column(name = "job_title_id")
+    private Long jobTitleId;
+
+    @Column(name = "workplace_id")
+    private Long workplaceId;
 
     private int contractPaidDays;
     private int thisYearPaidDays;
@@ -41,26 +43,27 @@ public class User {
     @JoinColumn(name="userId")
     private List<WorkLeave> allWorkleaves = new ArrayList<>();
 
-    public User(String email, String pass, String fullName, String jobTitle, String workplace, int contractPaidDays, int thisYearPaidDays, int lastYearPaidDays, Role role, Long managerId) {
+    public User(String email, String pass, String fullName, Long jobTitle, Long workplaceId, int contractPaidDays, int thisYearPaidDays, int lastYearPaidDays, Role role, Long managerId) {
         this.email = email;
         this.pass = pass;
         this.fullName = fullName;
-        this.jobTitle = jobTitle;
-        this.workplace = workplace;
+        this.jobTitleId = jobTitle;
+        this.workplaceId = workplaceId;
         this.contractPaidDays = contractPaidDays;
         this.thisYearPaidDays = thisYearPaidDays;
         this.lastYearPaidDays = lastYearPaidDays;
         this.role = role;
         this.managerId = managerId;
     }
-//TODO: continue paiddays implementation
     public User(UserView uv) {
         this.email = uv.email();
         this.pass = uv.pass();
         this.fullName = uv.fullName();
-        this.jobTitle = uv.jobTitle();
-        this.workplace = uv.workplace();
-        this.paidDays = uv.paidDays();
+        this.jobTitleId = uv.jobTitle();
+        this.workplaceId = uv.workplace();
+        this.contractPaidDays = uv.contractPaidDays();
+        this.thisYearPaidDays = uv.thisYearPaidDays();
+        this.lastYearPaidDays = uv.lastYearPaidDays();
         this.role = uv.role();
         this.managerId = uv.managerId();
     }
@@ -69,9 +72,11 @@ public class User {
         u.setEmail(uuv.email());
         u.setPass(uuv.pass());
         u.setFullName(uuv.fullName());
-        u.setJobTitle(uuv.jobTitle());
-        u.setWorkplace(uuv.workplace());
-        u.setPaidDays(uuv.paidDays());
+        u.setJobTitleId(uuv.jobTitle());
+        u.setWorkplaceId(uuv.workplace());
+        u.setContractPaidDays(uuv.contractPaidDays());
+        u.setThisYearPaidDays(uuv.thisYearPaidDays());
+        u.setLastYearPaidDays(uuv.lastYearPaidDays());
         u.setRole(uuv.role());
         u.setManagerId(uuv.managerId());
         return u;
