@@ -5,10 +5,11 @@ import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
-import com.marti.humanresbackend.models.entities.Document;
-import com.marti.humanresbackend.models.entities.User;
-import com.marti.humanresbackend.models.entities.WorkLeave;
+import com.marti.humanresbackend.models.entities.*;
+import com.marti.humanresbackend.repositories.CompanyInfoRepository;
 import com.marti.humanresbackend.repositories.DocumentRepository;
+import com.marti.humanresbackend.repositories.JobTitleRepository;
+import com.marti.humanresbackend.repositories.WorkplaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
@@ -24,6 +25,8 @@ public class DocumentService {
     private final UserService userService;
     private final WorkLeaveService workLeaveService;
     private final DocumentRepository documentRep;
+    private final JobTitleRepository jobRep;
+    private final CompanyInfoRepository compRep;
     private final TemplateEngine templateEngine;
 
     private final DateTimeFormatter dtf =  DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -45,18 +48,25 @@ public class DocumentService {
         WorkLeave wl = workLeaveService.getById(workleaveId);
 
         User u = userService.getUserById(wl.getUserId());
+        CompanyInfo company = compRep.getById(1L);
         int daysOff = workLeaveService.getBusinessDays(wl);
         String startDate = wl.getStartDate().format(dtf);
         String endDate = wl.getEndDate().format(dtf);
         String fillDate = wl.getFillDate().format(dtf);
+        String jobTitle = jobRep.getById(u.getJobTitleId()).getJobTitle();
+
+
 
         Context context = new Context(Locale.getDefault());
         context.setVariable("user",u);
+        context.setVariable("company",company);
         context.setVariable("type",wl.getType());
         context.setVariable("daysOff",daysOff);
         context.setVariable("startDate",startDate);
         context.setVariable("endDate",endDate);
         context.setVariable("fillDate",fillDate);
+        context.setVariable("jobTitle",jobTitle);
+
 
         String workLeaveHtml = templateEngine.process("work_leave", context);
 

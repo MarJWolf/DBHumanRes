@@ -86,16 +86,16 @@ public class WorkLeaveService {
         return createWLDTO(leaves);}
 
     public List<WorkLeave> getAllByUser(Long id){
-        return workRep.findAllByUserIdEquals(id);
+        return workRep.findAllByUserIdEqualsOrderByFillDateDesc(id);
     }
 
     public List<WorkLeaveDTO> getAllByUserSimplified(Long userId){
-        List<WorkLeave> leaves = workRep.findAllByUserIdEquals(userId);
+        List<WorkLeave> leaves = workRep.findAllByUserIdEqualsOrderByFillDateDesc(userId);
         return createWLDTO(leaves);
     }
 
     public List<WorkLeaveDTO> getAllByUserAndAdminStatSimplified(Long userId, Status stat){
-        List<WorkLeave> leaves = workRep.findAllByUserIdEqualsAndStatusAdmin(userId, stat);
+        List<WorkLeave> leaves = workRep.findAllByUserIdEqualsAndStatusAdminOrderByFillDateDesc(userId, stat);
         return createWLDTO(leaves);
     }
 
@@ -103,7 +103,7 @@ public class WorkLeaveService {
         List<User> subUsers= manService.getManagerByUserManager(userId).getAllWorkers();
         List<WorkLeave> leaves =  new ArrayList<>();
         for (User subUser : subUsers) {
-            leaves.addAll(workRep.findAllByUserIdEqualsAndStatusManager(subUser.getId(), stat));
+            leaves.addAll(workRep.findAllByUserIdEqualsAndStatusManagerOrderByFillDateDesc(subUser.getId(), stat));
         }
         return createWLDTO(leaves);
     }
@@ -112,7 +112,7 @@ public class WorkLeaveService {
         List<User> noSubUsers = userService.getAllByManager(null);
         List<WorkLeave> leaves =  new ArrayList<>();
         for (User subUser : noSubUsers) {
-            leaves.addAll(workRep.findAllByUserIdEqualsAndStatusManager(subUser.getId(), Status.Pending));
+            leaves.addAll(workRep.findAllByUserIdEqualsAndStatusManagerOrderByFillDateDesc(subUser.getId(), Status.Pending));
         }
         return createWLDTO(leaves);
     }

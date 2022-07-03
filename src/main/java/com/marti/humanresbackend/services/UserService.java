@@ -67,19 +67,19 @@ public class UserService {
     }
 
     public List<User> getAll(){
-        return userRep.findAllByJobTitleIdIsNotNull();
+        return userRep.findAllByJobTitleIdIsNotNullOrderByFullName();
     }
     public List<User> getAllInactive(){
-        return userRep.findAllByJobTitleIdIsNull();
+        return userRep.findAllByJobTitleIdIsNullOrderByFullName();
     }
 
     public List<UserDTO> getAllSimplified(){
-        List<User> users = userRep.findAllByJobTitleIdIsNotNull();
+        List<User> users = userRep.findAllByJobTitleIdIsNotNullOrderByFullName();
         return users.stream().map(UserDTO::new).collect(Collectors.toList());
     }
 
     public List<UserDTO> getAllInactiveSimplified(){
-        List<User> users = userRep.findAllByJobTitleIdIsNull();
+        List<User> users = userRep.findAllByJobTitleIdIsNullOrderByFullName();
         return users.stream().map(UserDTO::new).collect(Collectors.toList());
     }
 
@@ -128,6 +128,7 @@ public class UserService {
 
     //job
 
+    public List<JobTitle> allJobTitles(){return jobRep.findAll();}
     public void createJobTitle(String name){
         jobRep.save(new JobTitle(name));
     }
@@ -144,6 +145,7 @@ public class UserService {
 
     // workplace
 
+    public List<Workplace> allWorkplaces(){return workRep.findAll();}
     public void createWorkplace(String name){
         workRep.save(new Workplace(name));
     }

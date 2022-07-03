@@ -18,14 +18,16 @@ class UserUnitTest {
 
     @Test
     void createUserShouldWork() {
-        User user = new User("example@email.com","examplePass","Full Name", 1L, 1L, 22, 22,0, Role.User, null);
+        User user = new User("example@email.com","examplePass","Full Name", 1L, 1L,
+                22, 22,0, Role.User, null);
         User save = userService.createUser(user);
         assert save.getId()!=null;
     }
     @Test
     void createUserShouldThrowException() {
         Assertions.assertThrows(RuntimeException.class,() -> {
-            User user = new User("","examplePass","Full Name", 1L, 1L, 22, 22,0, Role.User, null
+            User user = new User("","examplePass","Full Name", 1L, 1L, 22,
+                    22,0, Role.User, null
             );
             userService.createUser(user);
         });

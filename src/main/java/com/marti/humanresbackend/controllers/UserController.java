@@ -1,9 +1,9 @@
 package com.marti.humanresbackend.controllers;
 
 import com.marti.humanresbackend.models.DTO.UserDTO;
+import com.marti.humanresbackend.models.entities.JobTitle;
 import com.marti.humanresbackend.models.entities.User;
-import com.marti.humanresbackend.models.entities.WorkLeave;
-import com.marti.humanresbackend.models.enums.Status;
+import com.marti.humanresbackend.models.entities.Workplace;
 import com.marti.humanresbackend.models.views.UpdateUserView;
 import com.marti.humanresbackend.models.views.UserView;
 import com.marti.humanresbackend.services.UserService;
@@ -69,4 +69,32 @@ public class UserController {
     public UpdateUserView getUUV(@RequestParam Long Id){
         return userService.getUpdateUserView(Id);
     }
+
+    //JobTitle
+
+    @GetMapping(path = "allJobTitles")
+    public List<JobTitle> allJobTitles(){return userService.allJobTitles();}
+
+    @DeleteMapping(path = "deleteJobTitle")
+    public void deleteJobTitle(@RequestParam Long Id){userService.deleteJobTitle(Id);}
+
+    @PostMapping(path = "createJobTitle")
+    public void createJobTitle(@RequestParam String name){userService.createJobTitle(name);}
+
+    //Workplace
+
+    @GetMapping(path = "allWorkplaces")
+    public List<Workplace> allWorkplaces(){return userService.allWorkplaces();}
+
+    @DeleteMapping(path = "deleteWorkplace")
+    public void deleteWorkplace(@RequestParam Long Id){userService.deleteWorkplace(Id);}
+
+    @PostMapping(path = "createWorkplace")
+    public void createWorkplace(@RequestParam String name){userService.createWorkplace(name);}
+
+    //ComapnyInfo
+
+    @PutMapping(path = "uspateCompanyInfo")
+    public void updateCompanyInfo(@RequestParam String Cname, @RequestParam String Oname){userService.updateCompanyInfo(Cname, Oname);}
+
 }
