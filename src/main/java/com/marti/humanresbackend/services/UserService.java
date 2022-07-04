@@ -170,4 +170,6 @@ public class UserService {
         compInfo.setCompanyCEOName(CEOname);
         compRep.save(compInfo);
     }
+
+    public CompanyInfo getCompanyInfo(){return compRep.getById(1L);}
 }

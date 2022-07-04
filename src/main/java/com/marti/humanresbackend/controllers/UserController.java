@@ -1,6 +1,7 @@
 package com.marti.humanresbackend.controllers;
 
 import com.marti.humanresbackend.models.DTO.UserDTO;
+import com.marti.humanresbackend.models.entities.CompanyInfo;
 import com.marti.humanresbackend.models.entities.JobTitle;
 import com.marti.humanresbackend.models.entities.User;
 import com.marti.humanresbackend.models.entities.Workplace;
@@ -94,7 +95,9 @@ public class UserController {
 
     //ComapnyInfo
 
-    @PutMapping(path = "uspateCompanyInfo")
+    @PutMapping(path = "updateCompanyInfo")
     public void updateCompanyInfo(@RequestParam String Cname, @RequestParam String Oname){userService.updateCompanyInfo(Cname, Oname);}
 
+    @GetMapping(path = "getCompanyInfo")
+    public CompanyInfo getCompanyInfo(){return userService.getCompanyInfo();}
 }
