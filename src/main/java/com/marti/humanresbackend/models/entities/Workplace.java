@@ -22,7 +22,8 @@ public class Workplace {
     @JoinColumn(name="workplace_id")
     private List<User> users;
 
-    private String worklplace;
+    private String workplace;
 
-    public Workplace(String name){worklplace = name;}
+    public Workplace(String name){
+        workplace = name;}
 }

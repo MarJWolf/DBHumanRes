@@ -129,6 +129,11 @@ public class UserService {
     //job
 
     public List<JobTitle> allJobTitles(){return jobRep.findAll();}
+
+    public JobTitle getJobTitleById(Long Id){
+        Optional<JobTitle> byId = jobRep.findById(Id);
+        return byId.orElse(null);
+    }
     public void createJobTitle(String name){
         jobRep.save(new JobTitle(name));
     }
@@ -152,7 +157,7 @@ public class UserService {
 
     public void updateWorkplace(Long Id, String name){
         Workplace wp = workRep.getById(Id);
-        wp.setWorklplace(name);
+        wp.setWorkplace(name);
         workRep.save(wp);
     }
 
@@ -162,7 +167,9 @@ public class UserService {
 
     //companyInfo
 
-    public void createCompanyInfo(String name, String CEOname){ compRep.save(new CompanyInfo(name, CEOname)); }
+    public void createCompanyInfo(String name, String CEOname){
+        compRep.save(new CompanyInfo(name, CEOname));
+    }
 
     public void updateCompanyInfo(String name, String CEOname){
         CompanyInfo compInfo = compRep.getById(1L);
@@ -171,5 +178,7 @@ public class UserService {
         compRep.save(compInfo);
     }
 
-    public CompanyInfo getCompanyInfo(){return compRep.getById(1L);}
+    public CompanyInfo getCompanyInfo(){
+        return compRep.findById(1L).orElse(null);
+    }
 }

@@ -82,6 +82,9 @@ public class UserController {
     @PostMapping(path = "createJobTitle")
     public void createJobTitle(@RequestParam String name){userService.createJobTitle(name);}
 
+    @GetMapping(path = "getJobTitleById")
+    public JobTitle getJobTitleById(@RequestParam Long Id){return userService.getJobTitleById(Id);}
+
     //Workplace
 
     @GetMapping(path = "allWorkplaces")

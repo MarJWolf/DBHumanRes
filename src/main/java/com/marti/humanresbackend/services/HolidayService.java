@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 
@@ -15,6 +16,8 @@ public class HolidayService {
 
     private final RestTemplate restTemplate;
     private final HolidayRepository holidayRep;
+    private final DateTimeFormatter dtf =  DateTimeFormatter.ofPattern("M-d-y");
+
 
     public HolidayService(RestTemplate restTemplate, HolidayRepository holidayRep) {
         this.restTemplate = restTemplate;
@@ -35,9 +38,9 @@ public class HolidayService {
 
     }
 
-    public void createHoliday(LocalDate date, String name){
-        if(!holidayRep.existsByHoliday(date)){
-            holidayRep.save(new Holiday(date, name));
+    public void createHoliday(APIHolidayView holiday){
+        if(!holidayRep.existsByHoliday(holiday.date())){
+            holidayRep.save(new Holiday(holiday.date(), holiday.localName()));
         }
     }
 

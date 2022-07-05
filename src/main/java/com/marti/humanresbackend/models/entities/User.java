@@ -59,8 +59,8 @@ public class User {
         this.email = uv.email();
         this.pass = uv.pass();
         this.fullName = uv.fullName();
-        this.jobTitleId = uv.jobTitle();
-        this.workplaceId = uv.workplace();
+        this.jobTitleId = uv.jobTitleId();
+        this.workplaceId = uv.workplaceId();
         this.contractPaidDays = uv.contractPaidDays();
         this.thisYearPaidDays = uv.thisYearPaidDays();
         this.lastYearPaidDays = uv.lastYearPaidDays();
@@ -72,8 +72,8 @@ public class User {
         u.setEmail(uuv.email());
         u.setPass(uuv.pass());
         u.setFullName(uuv.fullName());
-        u.setJobTitleId(uuv.jobTitle());
-        u.setWorkplaceId(uuv.workplace());
+        u.setJobTitleId(uuv.jobTitleId());
+        u.setWorkplaceId(uuv.workplaceId());
         u.setContractPaidDays(uuv.contractPaidDays());
         u.setThisYearPaidDays(uuv.thisYearPaidDays());
         u.setLastYearPaidDays(uuv.lastYearPaidDays());

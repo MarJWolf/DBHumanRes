@@ -1,6 +1,7 @@
 package com.marti.humanresbackend.controllers;
 
 import com.marti.humanresbackend.models.entities.Holiday;
+import com.marti.humanresbackend.models.views.APIHolidayView;
 import com.marti.humanresbackend.services.HolidayService;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,11 +21,11 @@ public class HolidayController {
     public void allAPIHolidays(@RequestParam int year){ holidayService.getAllAPIHolidays(year);}
 
     @PutMapping(path = "createHoliday")
-    public void createHoliday(@RequestParam LocalDate date, @RequestParam String name){holidayService.createHoliday(date, name);}
+    public void createHoliday(@RequestBody APIHolidayView holidayView){holidayService.createHoliday(holidayView);}
 
     @GetMapping(path = "allHolidays")
     public List<Holiday> getAllHolidays(){return holidayService.getAllHolidays();}
 
-    @PutMapping(path = "deleteHoliday")
+    @DeleteMapping(path = "deleteHoliday")
     public void deleteHoliday(@RequestParam Long Id){holidayService.deleteHoliday(Id);}
 }
