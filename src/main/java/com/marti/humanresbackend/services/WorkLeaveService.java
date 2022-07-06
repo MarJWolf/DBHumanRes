@@ -22,29 +22,24 @@ public class WorkLeaveService {
     private final WorkLeaveRepository workRep;
     private final UserService userService;
     private final ManagerService manService;
-    private static final Set<LocalDate> HOLIDAYS;
 
-    static {
-        List<LocalDate> dates = List.of(
-                LocalDate.of(2017, 1, 2),
-                LocalDate.of(2017, 1, 16),
-                LocalDate.of(2017, 2, 20),
-                LocalDate.of(2017, 5, 29),
-                LocalDate.of(2017, 7, 4),
-                LocalDate.of(2017, 9, 4),
-                LocalDate.of(2017, 10, 9),
-                LocalDate.of(2017, 11, 10),
-                LocalDate.of(2017, 11, 23),
-                LocalDate.of(2017, 12, 25)
-        );
-        HOLIDAYS = Set.copyOf(dates);
-    }
+    private final HolidayService holidayService;
+    private Set<LocalDate> HOLIDAYS;
+
 
     @Autowired
-    public WorkLeaveService(WorkLeaveRepository workRep, UserService userService, ManagerService manService) {
+    public WorkLeaveService(WorkLeaveRepository workRep, UserService userService, ManagerService manService, HolidayService holidayService, Set<LocalDate> holidays) {
         this.workRep = workRep;
         this.userService = userService;
         this.manService = manService;
+        this.holidayService = holidayService;
+    }
+
+    private void resetHolidays(){
+        HOLIDAYS = new HashSet<>();
+        holidayService.getAllHolidays().forEach(holiday -> {
+            HOLIDAYS.add(holiday.getHoliday());
+        });
     }
 
     private List<WorkLeaveDTO> createWLDTO(List<WorkLeave> leaves){
@@ -66,6 +61,7 @@ public class WorkLeaveService {
     }
 
     public int getBusinessDays(WorkLeave w) {
+        resetHolidays();
         int businessDays = 0;
         LocalDate d = w.getStartDate();
         while(!d.isAfter(w.getEndDate())){
