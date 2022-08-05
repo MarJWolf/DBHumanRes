@@ -15,7 +15,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.transaction.Transactional;
-import java.util.List;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY,connection = EmbeddedDatabaseConnection.H2)
@@ -30,7 +29,8 @@ class UserUnitTest {
 
     @Test
     void createUserShouldWork() {
-        User user = new User("example5@email.com","examplePass","Full Name", 1L, 1L, 22, 22,0, Role.User, null);
+        User user = new User("example5@email.com","examplePass","Full Name", 1L, 1L,
+                22, 22,0, Role.User, null);
         User save = userService.createUser(user);
         assert save.getId()!=null;
     }
