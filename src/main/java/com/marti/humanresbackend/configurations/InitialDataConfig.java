@@ -38,10 +38,10 @@ public class InitialDataConfig implements ApplicationRunner {
         userService.createWorkplace("Varna");
         userService.createWorkplace("Sofia");
         userService.createWorkplace("WFH");
-        userService.createUser(new User("example@email.com", "password1", "Kate Peterson", 3L, 1L,20, 12,0, Role.Manager, null));
-        userService.createUser(new User("example2@email.com", "password12", "Kate second Peterson", 1L, 1L,22, 22,0, Role.User, 1L));
-        userService.createUser(new User("example3@email.com", "password13", "Kate third Peterson", 2L, 1L,30, 27, 11, Role.Admin, null));
-        userService.createUser(new User("example4@email.com", "password14", "Kate fourth Peterson", null, 1L, 30, 27,9, Role.Admin, null));
+        userService.createUser(new User("example@email.com", "password1", "Kate Peterson", 3L, 1L,20,  Role.Manager, null));
+        userService.createUser(new User("example2@email.com", "password12", "Kate second Peterson", 1L, 1L,22, Role.User, 1L));
+        userService.createUser(new User("example3@email.com", "password13", "Kate third Peterson", 2L, 1L,30,  Role.Admin, null));
+        userService.createUser(new User("example4@email.com", "password14", "Kate fourth Peterson", null, 1L, 30, Role.Admin, null));
         workService.createLeave(new WorkLeave(new WorkLeaveView(1L, Type.Paid, LocalDate.of(2022,6,27),LocalDate.of(2022,6,27),LocalDate.of(2022,6,27), Status.Pending, Status.Pending)));
         workService.createLeave(new WorkLeave(new WorkLeaveView(2L, Type.Paid, LocalDate.of(2022,6,27),LocalDate.of(2022,6,27),LocalDate.of(2022,6,27), Status.Pending, Status.Pending)));
         workService.createLeave(new WorkLeave(new WorkLeaveView(3L, Type.Paid, LocalDate.of(2022,6,27),LocalDate.of(2022,6,27),LocalDate.of(2022,6,27), Status.Pending, Status.Confirmed)));

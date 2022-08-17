@@ -23,13 +23,16 @@ public class UserService {
     private final WorkplaceRepository workRep;
     private final CompanyInfoRepository compRep;
 
+    private final DaysRepository daysRep;
+
     @Autowired
-    public UserService(UserRepository userRep, ManagerRepository manRep, JobTitleRepository jobRep, WorkplaceRepository workRep, CompanyInfoRepository compRep) {
+    public UserService(UserRepository userRep, ManagerRepository manRep, JobTitleRepository jobRep, WorkplaceRepository workRep, CompanyInfoRepository compRep, DaysRepository daysRep) {
         this.userRep = userRep;
         this.manRep = manRep;
         this.jobRep = jobRep;
         this.workRep = workRep;
         this.compRep = compRep;
+        this.daysRep = daysRep;
     }
 
     //user
@@ -108,7 +111,7 @@ public class UserService {
 
     public UpdateUserView getUpdateUserView(Long Id) {
         User u = getUserById(Id);
-        return new UpdateUserView(u.getId(), u.getEmail(), u.getPass(), u.getFullName(), u.getJobTitleId(), u.getWorkplaceId(), u.getContractPaidDays(), u.getThisYearPaidDays(), u.getLastYearPaidDays(), u.getRole(), u.getManagerId());
+        return new UpdateUserView(u.getId(), u.getEmail(), u.getPass(), u.getFullName(), u.getJobTitleId(), u.getWorkplaceId(), u.getContractPaidDays(),  u.getRole(), u.getManagerId());
     }
 
 
@@ -164,6 +167,24 @@ public class UserService {
     public void deleteWorkplace(Long Id){
         workRep.delete(workRep.getById(Id));
     }
+
+    //days
+
+    public List<Days> allDays(){return daysRep.findAll();}
+
+    public List<Days> allDaysByUser(Long userID){return daysRep.getDaysByUserDaysId(userID);}
+
+    public void createDays(Long userID, int days, int year, boolean use){daysRep.save(new Days(days, userID, year, use));}
+
+    public void updateDays(Long daysID, int days, int year, boolean use){
+        Days Days = daysRep.getById(daysID);
+        Days.setDays(days);
+        Days.setYear(year);
+        Days.setUse(use);
+        daysRep.save(Days);
+    }
+
+    public void deleteDays(Long Id){daysRep.delete(daysRep.getById(Id));}
 
     //companyInfo
 

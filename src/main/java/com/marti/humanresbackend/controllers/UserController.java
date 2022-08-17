@@ -1,10 +1,7 @@
 package com.marti.humanresbackend.controllers;
 
 import com.marti.humanresbackend.models.DTO.UserDTO;
-import com.marti.humanresbackend.models.entities.CompanyInfo;
-import com.marti.humanresbackend.models.entities.JobTitle;
-import com.marti.humanresbackend.models.entities.User;
-import com.marti.humanresbackend.models.entities.Workplace;
+import com.marti.humanresbackend.models.entities.*;
 import com.marti.humanresbackend.models.views.UpdateUserView;
 import com.marti.humanresbackend.models.views.UserView;
 import com.marti.humanresbackend.services.UserService;
@@ -95,6 +92,29 @@ public class UserController {
 
     @PostMapping(path = "createWorkplace")
     public void createWorkplace(@RequestParam String name){userService.createWorkplace(name);}
+
+    //days
+
+    @GetMapping(path = "allDays")
+    public List<Days> allDays(){return userService.allDays();}
+
+    @GetMapping(path = "allDaysByUserId")
+    public List<Days> allDaysByUserId(@RequestParam Long userID){return userService.allDaysByUser(userID);}
+
+    @PutMapping(path = "createDays")
+    public void createDays(@RequestParam Long userID, @RequestParam int days,@RequestParam int year,@RequestParam boolean use){
+        userService.createDays(userID, days, year, use);
+    }
+
+    @PutMapping(path = "updateeDays")
+    public void updateDays(@RequestParam Long daysID, @RequestParam int days,@RequestParam int year,@RequestParam boolean use){
+        userService.updateDays(daysID, days, year, use);
+    }
+
+    @DeleteMapping(path = "deleteDays")
+    public void deleteDays(@RequestParam Long Id){
+        userService.deleteDays(Id);
+    }
 
     //ComapnyInfo
 

@@ -1,6 +1,7 @@
 package com.marti.humanresbackend.services;
 
 import com.marti.humanresbackend.models.DTO.WorkLeaveDTO;
+import com.marti.humanresbackend.models.entities.Days;
 import com.marti.humanresbackend.models.entities.User;
 import com.marti.humanresbackend.models.entities.WorkLeave;
 import com.marti.humanresbackend.models.enums.Status;
@@ -50,14 +51,26 @@ public class WorkLeaveService {
         return leavesFinal;
     }
 
+    //TODO: tezi tri funkcii otgovarqt za dnite i da se nameri pravilno mqsto za vzimane na dnite
     public WorkLeave createLeave(WorkLeave w){
-        User u = userService.getUserById(w.getUserId());
         if(w.getType() == Type.Paid){
-            if(getBusinessDays(w) > u.getLastYearPaidDays()+u.getThisYearPaidDays()){
+            int totalDaysCount = getTotalUserDaysCount(w.getUserId());
+            if(getBusinessDays(w) > totalDaysCount){
                 throw new RuntimeException("Нямате достатъчно дни!");
             }
+            takeDays(w);
         }
         return workRep.save(w);
+    }
+
+    private int getTotalUserDaysCount(Long userId) {
+        List<Days> days = userService.allDaysByUser(userId);
+        int totalDaysCount = 0;
+        for (Days day : days) {
+            if(day.isUse())
+                totalDaysCount+= day.getDays();
+        }
+        return totalDaysCount;
     }
 
     public int getBusinessDays(WorkLeave w) {
@@ -74,6 +87,37 @@ public class WorkLeaveService {
             d = d.plusDays(1);
         }
         return businessDays;
+    }
+
+    //TODO: da smetna i izwadq dnite ot tablicata, da namerq mqsto
+    private void takeDays(WorkLeave workLeave) {
+        if(workLeave.getStatusAdmin() == Status.Confirmed && workLeave.getStatusManager() == Status.Confirmed && workLeave.getType() == Type.Paid)
+        {
+            int businessDays = getBusinessDays(workLeave);
+            User u = userService.getUserById(workLeave.getUserId());
+            if(businessDays > getTotalUserDaysCount(workLeave.getUserId())){
+                throw new RuntimeException("Потребителя няма достатъчно дни!");
+            }else{
+                List<Days> days = userService.allDaysByUser(workLeave.getUserId());
+                Collections.sort(days);
+                for (Days day : days) {
+                    if(day.isUse()){
+                        if(day.getDays()>businessDays)
+                        {
+                            day.setDays(day.getDays() - businessDays);
+                        }else{
+                            businessDays = businessDays- day.getDays();
+                            day.setDays(0);
+                            day.setUse(false);
+                        }
+                    }
+                }
+                for (Days day : days) {
+                    userService.updateDays(day.getId(), day.getDays(), day.getYear(), day.isUse());
+                }
+            }
+            userService.updateUser(u);
+        }
     }
 
     public List<WorkLeave> getAll() { return workRep.findAll();}
@@ -160,24 +204,5 @@ public class WorkLeaveService {
         updateWorkLeave(workLeave);
     }
 
-    private void takeDays(WorkLeave workLeave) {
-        if(workLeave.getStatusAdmin() == Status.Confirmed && workLeave.getStatusManager() == Status.Confirmed && workLeave.getType() == Type.Paid)
-        {
-            int businessDays = getBusinessDays(workLeave);
-            User u = userService.getUserById(workLeave.getUserId());
-            if(businessDays > u.getLastYearPaidDays()+u.getThisYearPaidDays()){
-                throw new RuntimeException("Потребителя няма достатъчно дни!");
-            }else{
-                if((u.getLastYearPaidDays() - businessDays) >= 0){
-                    u.setLastYearPaidDays(u.getLastYearPaidDays() - businessDays);
-                }else{
-                    businessDays = businessDays - u.getLastYearPaidDays();
-                    u.setLastYearPaidDays(0);
-                    u.setThisYearPaidDays(u.getThisYearPaidDays() - businessDays);
-                }
-                userService.updateUser(u);
-            }
 
-        }
-    }
 }

@@ -30,10 +30,8 @@ public class User {
 
     @Column(name = "workplace_id")
     private Long workplaceId;
-
+//to remove
     private int contractPaidDays;
-    private int thisYearPaidDays;
-    private int lastYearPaidDays;
 
     private Role role;
 
@@ -43,15 +41,17 @@ public class User {
     @JoinColumn(name="userId")
     private List<WorkLeave> allWorkleaves = new ArrayList<>();
 
-    public User(String email, String pass, String fullName, Long jobTitle, Long workplaceId, int contractPaidDays, int thisYearPaidDays, int lastYearPaidDays, Role role, Long managerId) {
+    @OneToMany()
+    @JoinColumn(name="userDaysId")
+    private List<Days> allDays = new ArrayList<>();
+
+    public User(String email, String pass, String fullName, Long jobTitle, Long workplaceId, int contractPaidDays, Role role, Long managerId) {
         this.email = email;
         this.pass = pass;
         this.fullName = fullName;
         this.jobTitleId = jobTitle;
         this.workplaceId = workplaceId;
         this.contractPaidDays = contractPaidDays;
-        this.thisYearPaidDays = thisYearPaidDays;
-        this.lastYearPaidDays = lastYearPaidDays;
         this.role = role;
         this.managerId = managerId;
     }
@@ -62,8 +62,6 @@ public class User {
         this.jobTitleId = uv.jobTitleId();
         this.workplaceId = uv.workplaceId();
         this.contractPaidDays = uv.contractPaidDays();
-        this.thisYearPaidDays = uv.thisYearPaidDays();
-        this.lastYearPaidDays = uv.lastYearPaidDays();
         this.role = uv.role();
         this.managerId = uv.managerId();
     }
@@ -75,8 +73,6 @@ public class User {
         u.setJobTitleId(uuv.jobTitleId());
         u.setWorkplaceId(uuv.workplaceId());
         u.setContractPaidDays(uuv.contractPaidDays());
-        u.setThisYearPaidDays(uuv.thisYearPaidDays());
-        u.setLastYearPaidDays(uuv.lastYearPaidDays());
         u.setRole(uuv.role());
         u.setManagerId(uuv.managerId());
         return u;
