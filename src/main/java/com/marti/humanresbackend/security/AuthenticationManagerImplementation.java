@@ -26,11 +26,11 @@ public class AuthenticationManagerImplementation implements AuthenticationManage
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        log.info(authentication.getName() + "  " + authentication.getCredentials());
 
         User u = userService.getUserByEmailOptional(authentication.getName());
         if(u != null && Objects.equals(u.getPass(), authentication.getCredentials().toString()) && u.getJobTitleId() != null)
         {
+            log.info(authentication.getName() + "  successfully logged in!");
             return new UsernamePasswordAuthenticationToken(u.getId(), u.getPass(), Set.of(new SimpleGrantedAuthority(u.getRole().toString())));
         }
         throw new UsernameNotFoundException("Invalid credentials!");

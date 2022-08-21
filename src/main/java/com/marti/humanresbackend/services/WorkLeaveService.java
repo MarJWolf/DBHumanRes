@@ -1,5 +1,9 @@
 package com.marti.humanresbackend.services;
 
+import com.marti.humanresbackend.models.DTO.calendar.CalendarData;
+import com.marti.humanresbackend.models.DTO.calendar.CalendarUser;
+import com.marti.humanresbackend.models.DTO.calendar.CalendarWorkLeave;
+import com.marti.humanresbackend.models.DTO.UserDTO;
 import com.marti.humanresbackend.models.DTO.WorkLeaveDTO;
 import com.marti.humanresbackend.models.entities.Days;
 import com.marti.humanresbackend.models.entities.User;
@@ -58,7 +62,6 @@ public class WorkLeaveService {
             if(getBusinessDays(w) > totalDaysCount){
                 throw new RuntimeException("Нямате достатъчно дни!");
             }
-            takeDays(w);
         }
         return workRep.save(w);
     }
@@ -105,6 +108,7 @@ public class WorkLeaveService {
                         if(day.getDays()>businessDays)
                         {
                             day.setDays(day.getDays() - businessDays);
+                            break;
                         }else{
                             businessDays = businessDays- day.getDays();
                             day.setDays(0);
@@ -205,4 +209,24 @@ public class WorkLeaveService {
     }
 
 
+    public CalendarData getCalendarData() {
+        List<User> users = userService.getAll();
+        List<CalendarUser> calendarUsers = new ArrayList<>();
+        for (User user : users) {
+            List<CalendarWorkLeave> allWorkLeaves;
+            allWorkLeaves = workRep.getAllWorkLeaves(user.getId());
+            calendarUsers.add(new CalendarUser(new UserDTO(user),allWorkLeaves));
+        }
+        return new CalendarData(calendarUsers,holidayService.getAllHolidays());
+    }
+    public CalendarData getCalendarData(LocalDate startDate, LocalDate endDate) {
+        List<User> users = userService.getAll();
+        List<CalendarUser> calendarUsers = new ArrayList<>();
+        for (User user : users) {
+            List<CalendarWorkLeave> allWorkLeaves;
+            allWorkLeaves = workRep.getAllWorkLeaves(user.getId(),startDate,endDate);
+            calendarUsers.add(new CalendarUser(new UserDTO(user),allWorkLeaves));
+        }
+        return new CalendarData(calendarUsers,holidayService.getAllHolidays(startDate,endDate));
+    }
 }

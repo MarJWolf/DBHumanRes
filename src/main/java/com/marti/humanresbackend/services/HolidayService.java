@@ -45,6 +45,7 @@ public class HolidayService {
     }
 
     public List<Holiday> getAllHolidays(){return holidayRep.findAll();}
+    public List<Holiday> getAllHolidays(LocalDate startDate, LocalDate endDate){return holidayRep.findAllBetween(startDate,endDate);}
 
     public void deleteHoliday(Long Id){holidayRep.delete(holidayRep.getById(Id));}
 }

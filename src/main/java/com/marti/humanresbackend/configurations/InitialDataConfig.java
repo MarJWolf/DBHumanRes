@@ -42,6 +42,12 @@ public class InitialDataConfig implements ApplicationRunner {
         userService.createUser(new User("example2@email.com", "password12", "Kate second Peterson", 1L, 1L,22, Role.User, 1L));
         userService.createUser(new User("example3@email.com", "password13", "Kate third Peterson", 2L, 1L,30,  Role.Admin, null));
         userService.createUser(new User("example4@email.com", "password14", "Kate fourth Peterson", null, 1L, 30, Role.Admin, null));
+        userService.createDays(1L,20,2021,true);
+        userService.createDays(1L,20,2022,true);
+        userService.createDays(2L,20,2021,true);
+        userService.createDays(2L,20,2022,true);
+        userService.createDays(3L,20,2021,true);
+        userService.createDays(3L,20,2022,true);
         workService.createLeave(new WorkLeave(new WorkLeaveView(1L, Type.Paid, LocalDate.of(2022,6,27),LocalDate.of(2022,6,27),LocalDate.of(2022,6,27), Status.Pending, Status.Pending)));
         workService.createLeave(new WorkLeave(new WorkLeaveView(2L, Type.Paid, LocalDate.of(2022,6,27),LocalDate.of(2022,6,27),LocalDate.of(2022,6,27), Status.Pending, Status.Pending)));
         workService.createLeave(new WorkLeave(new WorkLeaveView(3L, Type.Paid, LocalDate.of(2022,6,27),LocalDate.of(2022,6,27),LocalDate.of(2022,6,27), Status.Pending, Status.Confirmed)));

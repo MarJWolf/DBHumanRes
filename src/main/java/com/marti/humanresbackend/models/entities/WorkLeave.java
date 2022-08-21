@@ -56,4 +56,15 @@ public class WorkLeave {
         wl.setStatusManager(uwlv.statusManager());
         return wl;
     }
+
+    //Method to get the combined status.
+    public Status getStatus() {
+        if(statusAdmin == Status.Confirmed && statusManager == Status.Confirmed)
+            return Status.Confirmed;
+        if(statusAdmin == Status.Denied && statusManager == Status.Denied)
+            return Status.Denied;
+        if(statusAdmin == Status.Cancelled || statusManager == Status.Cancelled)
+            return Status.Cancelled;
+        return Status.Pending;
+    }
 }
