@@ -106,12 +106,15 @@ public class UserService {
         {
             manRep.delete(manRep.findManagerByUserManager(u));
         }
+        for (Days days:uuv.days()) {
+            updateDays(days.getId(), days.getDays(), days.getYear(), days.isUse());
+        }
         updateUser(User.updateUser(u,uuv));
     }
 
     public UpdateUserView getUpdateUserView(Long Id) {
         User u = getUserById(Id);
-        return new UpdateUserView(u.getId(), u.getEmail(), u.getPass(), u.getFullName(), u.getJobTitleId(), u.getWorkplaceId(), u.getContractPaidDays(),  u.getRole(), u.getManagerId());
+        return new UpdateUserView(u.getId(), u.getEmail(), u.getPass(), u.getFullName(), u.getJobTitleId(), u.getWorkplaceId(), u.getContractPaidDays(),  u.getRole(), u.getManagerId(),u.getAllDays() );
     }
 
 
@@ -172,9 +175,14 @@ public class UserService {
 
     public List<Days> allDays(){return daysRep.findAll();}
 
-    public List<Days> allDaysByUser(Long userID){return daysRep.getDaysByUserDaysId(userID);}
+    public List<Days> allDaysByUser(Long userID){return daysRep.getDaysByUserId(userID);}
+    public List<Days> getUsableDaysByUser(Long userID){return daysRep.getUsableDaysByUserId(userID);}
 
-    public void createDays(Long userID, int days, int year, boolean use){daysRep.save(new Days(days, userID, year, use));}
+    public void createDays(Long userID, int days, int year, boolean use){daysRep.save(new Days( userID,days, year, use));}
+    public List<Days> createDays(Days days){
+        Days save = daysRep.save(days);
+        return allDaysByUser(save.getUserDaysId());
+    }
 
     public void updateDays(Long daysID, int days, int year, boolean use){
         Days Days = daysRep.getById(daysID);
@@ -201,5 +209,9 @@ public class UserService {
 
     public CompanyInfo getCompanyInfo(){
         return compRep.findById(1L).orElse(null);
+    }
+
+    public String getWorkplaceByUserId(Long id) {
+        return workRep.findByUserId(id);
     }
 }

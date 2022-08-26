@@ -101,12 +101,12 @@ public class UserController {
     @GetMapping(path = "allDaysByUserId")
     public List<Days> allDaysByUserId(@RequestParam Long userID){return userService.allDaysByUser(userID);}
 
-    @PutMapping(path = "createDays")
-    public void createDays(@RequestParam Long userID, @RequestParam int days,@RequestParam int year,@RequestParam boolean use){
-        userService.createDays(userID, days, year, use);
+    @PostMapping(path = "createDays")
+    public List<Days> createDays(@RequestBody Days days){
+        return userService.createDays(days);
     }
 
-    @PutMapping(path = "updateeDays")
+    @PutMapping(path = "updateDays")
     public void updateDays(@RequestParam Long daysID, @RequestParam int days,@RequestParam int year,@RequestParam boolean use){
         userService.updateDays(daysID, days, year, use);
     }

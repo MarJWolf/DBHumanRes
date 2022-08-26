@@ -4,6 +4,6 @@ import com.marti.humanresbackend.models.DTO.UserDTO;
 
 import java.util.List;
 
-public record CalendarUser(UserDTO user, List<CalendarWorkLeave> workLeaves) {
+public record CalendarUser(UserDTO user, String workplace, List<CalendarWorkLeave> workLeaves) {
 
 }

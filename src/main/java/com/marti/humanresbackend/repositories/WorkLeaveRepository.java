@@ -42,4 +42,13 @@ public interface WorkLeaveRepository extends JpaRepository<WorkLeave, Long> {
     ORDER BY w.startDate asc
     """)
     List<CalendarWorkLeave> getAllWorkLeaves(Long id, LocalDate start, LocalDate end);
+
+    @Query("""
+       from WorkLeave w
+       where w.userId = ?1
+       and w.statusAdmin = 1
+       and w.statusManager = 1
+       and (w.startDate between ?2 and ?3 or w.endDate between ?2 and ?3)
+    """)
+    List<WorkLeave> getConfirmedWorkleaves(Long id, LocalDate startDate, LocalDate endDate);
 }

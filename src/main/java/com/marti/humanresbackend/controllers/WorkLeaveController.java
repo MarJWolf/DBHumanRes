@@ -1,17 +1,15 @@
 package com.marti.humanresbackend.controllers;
 
-import com.marti.humanresbackend.models.DTO.calendar.CalendarData;
 import com.marti.humanresbackend.models.DTO.WorkLeaveDTO;
+import com.marti.humanresbackend.models.DTO.calendar.CalendarData;
 import com.marti.humanresbackend.models.entities.WorkLeave;
 import com.marti.humanresbackend.models.enums.Status;
 import com.marti.humanresbackend.models.views.UpdateWorkLeaveView;
 import com.marti.humanresbackend.models.views.WorkLeaveView;
 import com.marti.humanresbackend.services.WorkLeaveService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -90,9 +88,7 @@ public class WorkLeaveController {
         return workLeaveService.getUpdateWorkLeaveView(Id);}
 
     @GetMapping(path = "calendar")
-    public CalendarData getCalendarData(@RequestParam(required = false) @DateTimeFormat(pattern= "dd-MM-yyyy") LocalDate startDate,
-                                        @RequestParam(required = false) @DateTimeFormat(pattern= "dd-MM-yyyy") LocalDate endDate){
-        if(startDate == null || endDate == null) return workLeaveService.getCalendarData();
-        return workLeaveService.getCalendarData(startDate,endDate);
+    public CalendarData getCalendarData(@RequestParam() int year){
+        return workLeaveService.getCalendarData(year);
     }
 }

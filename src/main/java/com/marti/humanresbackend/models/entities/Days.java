@@ -22,7 +22,7 @@ public class Days implements Comparable<Days>{
     private int year;
     private boolean use;
 
-    public Days(int cDays, Long userId, int year,boolean canUse){
+    public Days( Long userId, int cDays, int year,boolean canUse){
         this.days = cDays;
         this.userDaysId = userId;
         this.year = year;
