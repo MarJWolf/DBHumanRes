@@ -10,9 +10,8 @@ public record CalendarWorkLeave(
         Type type,
         LocalDate startDate,
         LocalDate endDate,
-        LocalDate fillDate,
         Status status) {
     public CalendarWorkLeave(WorkLeave workLeave){
-        this(workLeave.getType(),workLeave.getStartDate(),workLeave.getEndDate(),workLeave.getFillDate(),workLeave.getStatus());
+        this(workLeave.getType(), workLeave.getStartDate(), workLeave.getEndDate(), workLeave.getStatus());
     }
 }

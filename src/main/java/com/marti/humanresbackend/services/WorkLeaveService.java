@@ -1,11 +1,8 @@
 package com.marti.humanresbackend.services;
 
-import com.marti.humanresbackend.models.DTO.calendar.CalendarData;
-import com.marti.humanresbackend.models.DTO.calendar.CalendarUser;
-import com.marti.humanresbackend.models.DTO.calendar.CalendarWorkLeave;
-import com.marti.humanresbackend.models.DTO.UserDTO;
+import com.marti.humanresbackend.models.DTO.CalendarDTO;
 import com.marti.humanresbackend.models.DTO.WorkLeaveDTO;
-import com.marti.humanresbackend.models.DTO.calendar.YearlyWorkleave;
+import com.marti.humanresbackend.models.DTO.calendar.CalendarDayStatus;
 import com.marti.humanresbackend.models.entities.Days;
 import com.marti.humanresbackend.models.entities.User;
 import com.marti.humanresbackend.models.entities.WorkLeave;
@@ -14,6 +11,8 @@ import com.marti.humanresbackend.models.enums.Type;
 import com.marti.humanresbackend.models.views.UpdateWorkLeaveView;
 import com.marti.humanresbackend.repositories.WorkLeaveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -28,13 +27,12 @@ public class WorkLeaveService {
     private final WorkLeaveRepository workRep;
     private final UserService userService;
     private final ManagerService manService;
-
     private final HolidayService holidayService;
     private Set<LocalDate> HOLIDAYS;
 
 
     @Autowired
-    public WorkLeaveService(WorkLeaveRepository workRep, UserService userService, ManagerService manService, HolidayService holidayService, Set<LocalDate> holidays) {
+    public WorkLeaveService(WorkLeaveRepository workRep, UserService userService, ManagerService manService, HolidayService holidayService) {
         this.workRep = workRep;
         this.userService = userService;
         this.manService = manService;
@@ -43,9 +41,7 @@ public class WorkLeaveService {
 
     private void resetHolidays() {
         HOLIDAYS = new HashSet<>();
-        holidayService.getAllHolidays().forEach(holiday -> {
-            HOLIDAYS.add(holiday.getHoliday());
-        });
+        holidayService.getAllHolidays().forEach(holiday -> HOLIDAYS.add(holiday.getHoliday()));
     }
 
     private List<WorkLeaveDTO> createWLDTO(List<WorkLeave> leaves) {
@@ -123,12 +119,16 @@ public class WorkLeaveService {
         }
     }
 
-    public List<WorkLeave> getAll() {
-        return workRep.findAll();
+    public List<WorkLeave> getAll(Long userId) {
+        WorkLeave example = new WorkLeave();
+        example.setUserId(userId);
+        return workRep.findAll(Example.of(example));
     }
 
-    public List<WorkLeaveDTO> getAllSimplified() {
-        List<WorkLeave> leaves = workRep.findAll();
+    public List<WorkLeaveDTO> getAllSimplified(Long userId) {
+        WorkLeave example = new WorkLeave();
+        example.setUserId(userId);
+        List<WorkLeave> leaves = workRep.findAll(Example.of(example), Sort.by(Sort.Direction.DESC, "startDate"));
         return createWLDTO(leaves);
     }
 
@@ -213,31 +213,68 @@ public class WorkLeaveService {
         updateWorkLeave(workLeave);
     }
 
-    public CalendarData getCalendarData(int year) {
-        List<User> users = userService.getAll();
-        List<CalendarUser> calendarUsers = new ArrayList<>();
-        LocalDate startDate = LocalDate.of(year, 1, 1);
-        LocalDate endDate = LocalDate.of(year, 12, 31);
-        for (User user : users) {
-            List<CalendarWorkLeave> allWorkLeaves;
-            allWorkLeaves = workRep.getConfirmedWorkleaves(user.getId(), startDate, endDate).stream().map(CalendarWorkLeave::new).toList();
-            calendarUsers.add(new CalendarUser(new UserDTO(user), userService.getWorkplaceByUserId(user.getId()), allWorkLeaves));
+    public void saveCalDays(WorkLeave w, CalendarDayStatus status, Map<LocalDate, CalendarDayStatus> days, int month) {
+        LocalDate d = w.getStartDate();
+        while (!d.isAfter(w.getEndDate())) {
+            if (d.getMonth().getValue() == month) {
+                days.putIfAbsent(d, status);
+            }
+            d = d.plusDays(1);
         }
-        return new CalendarData(calendarUsers, holidayService.getAllHolidays(startDate, endDate));
     }
 
-    private YearlyWorkleave getYearlyWorkleave(User user, LocalDate startDate, LocalDate endDate) {
-        List<Days> days = userService.getUsableDaysByUser(user.getId());
-        Days lastYear = days.remove(0);
-        int sum = 0;
-        for (Days day : days) {
-            sum += day.getDays();
+    public List<CalendarDTO> getCalendarDTO(List<User> users, LocalDate startDate, LocalDate endDate) {
+        List<CalendarDTO> calendarInfo = new ArrayList<>();
+        Map<LocalDate, CalendarDayStatus> monthDays = fillMonth(startDate);
+
+        for (User user : users) {
+            List<WorkLeave> wls = workRep.getConfirmedWorkleaves(user.getId(), startDate, endDate);
+            Map<LocalDate, CalendarDayStatus> days = new HashMap<>(monthDays);
+            for (WorkLeave wl : wls) {
+                if (wl.getType() == Type.Paid) {
+                    saveCalDays(wl, CalendarDayStatus.Paid, days, startDate.getMonthValue());
+                } else if (wl.getType() == Type.Unpaid) {
+                    saveCalDays(wl, CalendarDayStatus.Unpaid, days, startDate.getMonthValue());
+                } else {
+                    saveCalDays(wl, CalendarDayStatus.Special, days, startDate.getMonthValue());
+                }
+            }
+            CalendarDTO calendarDTO = new CalendarDTO(userService.getWorkplaceByUserId(user.getId()), user.getFullName(), days, days.size() - monthDays.size());
+            fillEmptyDaysInMonth(startDate, calendarDTO.getDays());
+            calendarInfo.add(calendarDTO);
         }
-        List<WorkLeave> workleaves = workRep.getConfirmedWorkleaves(user.getId(), startDate, endDate);
-        for (WorkLeave workleave : workleaves) {
-            int businessDays = getBusinessDays(workleave);
-//            Todo: Get Workleave days divided by months
+        return calendarInfo;
+    }
+
+    private void fillEmptyDaysInMonth(LocalDate startDate, Map<LocalDate, CalendarDayStatus> days) {
+        LocalDate localDate = startDate;
+        while (localDate.getMonthValue() == startDate.getMonthValue()) {
+            days.putIfAbsent(localDate, CalendarDayStatus.none);
+            localDate = localDate.plusDays(1L);
         }
-        return new YearlyWorkleave(sum, user.getContractPaidDays(), Map.of(), lastYear.getDays());
+    }
+
+    private Map<LocalDate, CalendarDayStatus> fillMonth(LocalDate startDate) {
+        resetHolidays();
+
+        Map<LocalDate, CalendarDayStatus> result = new HashMap<>();
+        LocalDate localDate = startDate;
+        while (localDate.getMonthValue() == startDate.getMonthValue()) {
+            DayOfWeek dw = localDate.getDayOfWeek();
+            if (HOLIDAYS.contains(localDate))
+                result.put(localDate, CalendarDayStatus.Holiday);
+            if (dw == DayOfWeek.SATURDAY || dw == DayOfWeek.SUNDAY)
+                result.putIfAbsent(localDate, CalendarDayStatus.NonWorkingDay);
+            localDate = localDate.plusDays(1L);
+        }
+
+        return result;
+    }
+
+    public List<CalendarDTO> getCalendarDTO(int year, int month) {
+        List<User> users = userService.getAll();
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = LocalDate.of(year, month, startDate.lengthOfMonth());
+        return getCalendarDTO(users, startDate, endDate);
     }
 }

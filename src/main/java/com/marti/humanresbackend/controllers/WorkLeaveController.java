@@ -1,7 +1,7 @@
 package com.marti.humanresbackend.controllers;
 
+import com.marti.humanresbackend.models.DTO.CalendarDTO;
 import com.marti.humanresbackend.models.DTO.WorkLeaveDTO;
-import com.marti.humanresbackend.models.DTO.calendar.CalendarData;
 import com.marti.humanresbackend.models.entities.WorkLeave;
 import com.marti.humanresbackend.models.enums.Status;
 import com.marti.humanresbackend.models.views.UpdateWorkLeaveView;
@@ -39,13 +39,13 @@ public class WorkLeaveController {
     }
 
     @GetMapping(path = "all")
-    public List<WorkLeave> getAll(){
-        return workLeaveService.getAll();
+    public List<WorkLeave> getAll(@RequestParam(required = false) Long userId) {
+        return workLeaveService.getAll(userId);
     }
 
     @GetMapping(path = "allSimplified")
-    public List<WorkLeaveDTO> getAllSimplified(){
-        return workLeaveService.getAllSimplified();
+    public List<WorkLeaveDTO> getAllSimplified(@RequestParam(required = false) Long userId) {
+        return workLeaveService.getAllSimplified(userId);
     }
 
     @GetMapping(path = "byUser")
@@ -79,16 +79,23 @@ public class WorkLeaveController {
     }
 
     @PutMapping(path = "update")
-    public void updateWorkLeave(@RequestBody UpdateWorkLeaveView uwv){
+    public void updateWorkLeave(@RequestBody UpdateWorkLeaveView uwv) {
         workLeaveService.updateWorkLeave(uwv);
     }
 
     @GetMapping(path = "edit")
-    public UpdateWorkLeaveView getById(@RequestParam Long Id){
-        return workLeaveService.getUpdateWorkLeaveView(Id);}
+    public UpdateWorkLeaveView getById(@RequestParam Long Id) {
+        return workLeaveService.getUpdateWorkLeaveView(Id);
+    }
 
+    //angel
+//    @GetMapping(path = "calendar")
+//    public CalendarData getCalendarData(@RequestParam() int year){
+//        return workLeaveService.getCalendarData(year);
+//    }
+    //marti
     @GetMapping(path = "calendar")
-    public CalendarData getCalendarData(@RequestParam() int year){
-        return workLeaveService.getCalendarData(year);
+    public List<CalendarDTO> getCalendarData(@RequestParam() int year, @RequestParam() int month) {
+        return workLeaveService.getCalendarDTO(year, month);
     }
 }
