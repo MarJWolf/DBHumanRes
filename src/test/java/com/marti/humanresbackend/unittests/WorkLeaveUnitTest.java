@@ -1,7 +1,6 @@
 package com.marti.humanresbackend.unittests;
 
 
-import com.marti.humanresbackend.models.entities.Holiday;
 import com.marti.humanresbackend.models.entities.User;
 import com.marti.humanresbackend.models.entities.WorkLeave;
 import com.marti.humanresbackend.models.enums.Role;
@@ -13,7 +12,6 @@ import com.marti.humanresbackend.repositories.ManagerRepository;
 import com.marti.humanresbackend.repositories.UserRepository;
 import com.marti.humanresbackend.repositories.WorkLeaveRepository;
 import com.marti.humanresbackend.services.HolidayService;
-import com.marti.humanresbackend.services.ManagerService;
 import com.marti.humanresbackend.services.UserService;
 import com.marti.humanresbackend.services.WorkLeaveService;
 import org.junit.jupiter.api.Assertions;
@@ -52,9 +50,9 @@ public class WorkLeaveUnitTest {
 
     @Test
     void createWorkLeaveShouldWork() {
-        User user = userService.createUser(new User("example@email.com","examplePass","Full Name", 1L,
-                1L, 22, 22,0, Role.User, null));
-        WorkLeave wl = new WorkLeave(Type.Paid, LocalDate.now(),LocalDate.now(), LocalDate.now().plusDays(3L), Status.Pending, Status.Pending);
+        User user = userService.createUser(new User("example@email.com", "examplePass", "Full Name", 1L,
+                1L, 22, Role.User, null));
+        WorkLeave wl = new WorkLeave(Type.Paid, LocalDate.now(), LocalDate.now(), LocalDate.now().plusDays(3L), Status.Pending, Status.Pending);
         wl.setUserId(user.getId());
         WorkLeave savewl = workLeaveService.createLeave(wl);
         assert savewl.getId()!=null;
@@ -64,7 +62,7 @@ public class WorkLeaveUnitTest {
     void createWorkLeaveShouldThrowException() {
         Assertions.assertThrows(RuntimeException.class,() -> {
             userService.createUser(new User("example@email.com", "examplePass", "Full Name", 1L,
-                    1L, 22, 0, 0, Role.User, null));
+                    1L, 22, Role.User, null));
             WorkLeave wl = new WorkLeave(Type.Paid, LocalDate.now(), LocalDate.now(), LocalDate.now().plusDays(3L), Status.Pending, Status.Pending);
             wl.setUserId(1L);
             workLeaveService.createLeave(wl);
@@ -74,9 +72,9 @@ public class WorkLeaveUnitTest {
 
     @Test
     void updateWorkLeaveShouldWork() {
-        User user = userService.createUser(new User("example@email.com","examplePass","Full Name", 1L, 1L,
-                22, 22,0, Role.User, null));
-        WorkLeave u = new WorkLeave(Type.Paid, LocalDate.now(),LocalDate.now(), LocalDate.now().plusDays(5L), Status.Pending, Status.Pending);
+        User user = userService.createUser(new User("example@email.com", "examplePass", "Full Name", 1L, 1L,
+                22, Role.User, null));
+        WorkLeave u = new WorkLeave(Type.Paid, LocalDate.now(), LocalDate.now(), LocalDate.now().plusDays(5L), Status.Pending, Status.Pending);
         u.setUserId(user.getId());
         workLeaveService.createLeave(u);
         workLeaveService.updateWorkLeave(new UpdateWorkLeaveView(u.getId(), u.getUserId(), u.getType(), u.getStartDate(), u.getEndDate(),
@@ -87,9 +85,9 @@ public class WorkLeaveUnitTest {
 
     @Test
     void getByIdShouldWork(){
-        User user = userService.createUser(new User("example@email.com","examplePass","Full Name", 1L, 1L,
-                22, 22,0, Role.User, null));
-        WorkLeave u = new WorkLeave(Type.Paid, LocalDate.now(),LocalDate.now(), LocalDate.now().plusDays(5L), Status.Pending, Status.Pending);
+        User user = userService.createUser(new User("example@email.com", "examplePass", "Full Name", 1L, 1L,
+                22, Role.User, null));
+        WorkLeave u = new WorkLeave(Type.Paid, LocalDate.now(), LocalDate.now(), LocalDate.now().plusDays(5L), Status.Pending, Status.Pending);
         u.setUserId(user.getId());
         WorkLeave wl = workLeaveService.createLeave(u);
         assert Objects.equals(wl.getId(), workLeaveService.getById(wl.getId()).getId());
@@ -99,7 +97,7 @@ public class WorkLeaveUnitTest {
     void getByIdShouldThrowException(){
         Assertions.assertThrows(RuntimeException.class,() -> {
             User user = userService.createUser(new User("example@email.com", "examplePass", "Full Name", 1L, 1L,
-                    22, 22, 0, Role.User, null));
+                    22, Role.User, null));
             WorkLeave u = new WorkLeave(Type.Paid, LocalDate.now(), LocalDate.now(), LocalDate.now().plusDays(5L), Status.Pending, Status.Pending);
             u.setUserId(user.getId());
             WorkLeave wl = workLeaveService.createLeave(u);
@@ -109,8 +107,8 @@ public class WorkLeaveUnitTest {
 
     @Test
     void checkBusinessDaysShouldWork(){
-        User user = userService.createUser(new User("example@email.com","examplePass","Full Name", 1L, 1L,
-                22, 22,0, Role.User, null));
+        User user = userService.createUser(new User("example@email.com", "examplePass", "Full Name", 1L, 1L,
+                22, Role.User, null));
         holidayService.createHoliday(new APIHolidayView(LocalDate.of(2022, 12, 16),"SDFasdfasdfeafsDASfe"));
         WorkLeave u = new WorkLeave(Type.Paid, LocalDate.of(2022, 12, 12),LocalDate.now(), LocalDate.of(2022, 12, 19), Status.Pending, Status.Pending);
         u.setUserId(user.getId());

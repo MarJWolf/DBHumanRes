@@ -13,15 +13,15 @@ public interface DaysRepository extends JpaRepository<Days, Long> {
         select d
         from Days d
         where d.userDaysId = ?1
-        order by d.year desc
-""")
+                    order by d.year desc
+            """)
     List<Days> getDaysByUserId(Long userID);
+
     @Query("""
-        select d
-        from Days d
-        where d.userDaysId = ?1
-        and d.use = true
-        order by d.year desc
-""")
-    List<Days> getUsableDaysByUserId(Long userID);
+                    select sum(d.days)
+                    from Days d
+                    where d.userDaysId = ?1
+                    and d.use = true
+            """)
+    Integer getUsableDaysByUserId(Long userID);
 }

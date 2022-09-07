@@ -4,6 +4,8 @@ import com.marti.humanresbackend.models.DTO.UserDTO;
 import com.marti.humanresbackend.models.entities.*;
 import com.marti.humanresbackend.models.views.UpdateUserView;
 import com.marti.humanresbackend.models.views.UserView;
+import com.marti.humanresbackend.services.CompanyInfoService;
+import com.marti.humanresbackend.services.DaysService;
 import com.marti.humanresbackend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +17,15 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final DaysService daysService;
+    private final CompanyInfoService companyService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, DaysService daysService, CompanyInfoService companyService) {
+
         this.userService = userService;
+        this.daysService = daysService;
+        this.companyService = companyService;
     }
 
 
@@ -96,31 +103,39 @@ public class UserController {
     //days
 
     @GetMapping(path = "allDays")
-    public List<Days> allDays(){return userService.allDays();}
+    public List<Days> allDays() {
+        return daysService.allDays();
+    }
 
     @GetMapping(path = "allDaysByUserId")
-    public List<Days> allDaysByUserId(@RequestParam Long userID){return userService.allDaysByUser(userID);}
+    public List<Days> allDaysByUserId(@RequestParam Long userID) {
+        return daysService.allDaysByUser(userID);
+    }
 
     @PostMapping(path = "createDays")
     public List<Days> createDays(@RequestBody Days days){
-        return userService.createDays(days);
+        return daysService.createDays(days);
     }
 
     @PutMapping(path = "updateDays")
     public void updateDays(@RequestParam Long daysID, @RequestParam int days,@RequestParam int year,@RequestParam boolean use){
-        userService.updateDays(daysID, days, year, use);
+        daysService.updateDays(daysID, days, year, use);
     }
 
     @DeleteMapping(path = "deleteDays")
     public void deleteDays(@RequestParam Long Id){
-        userService.deleteDays(Id);
+        daysService.deleteDays(Id);
     }
 
     //ComapnyInfo
 
     @PutMapping(path = "updateCompanyInfo")
-    public void updateCompanyInfo(@RequestParam String Cname, @RequestParam String Oname){userService.updateCompanyInfo(Cname, Oname);}
+    public void updateCompanyInfo(@RequestParam String Cname, @RequestParam String Oname) {
+        companyService.updateCompanyInfo(Cname, Oname);
+    }
 
     @GetMapping(path = "getCompanyInfo")
-    public CompanyInfo getCompanyInfo(){return userService.getCompanyInfo();}
+    public CompanyInfo getCompanyInfo() {
+        return companyService.getCompanyInfo();
+    }
 }

@@ -5,11 +5,15 @@ import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
-import com.marti.humanresbackend.models.entities.*;
+import com.itextpdf.layout.font.FontProvider;
+import com.itextpdf.layout.font.FontSet;
+import com.marti.humanresbackend.models.entities.CompanyInfo;
+import com.marti.humanresbackend.models.entities.Document;
+import com.marti.humanresbackend.models.entities.User;
+import com.marti.humanresbackend.models.entities.WorkLeave;
 import com.marti.humanresbackend.repositories.CompanyInfoRepository;
 import com.marti.humanresbackend.repositories.DocumentRepository;
 import com.marti.humanresbackend.repositories.JobTitleRepository;
-import com.marti.humanresbackend.repositories.WorkplaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
@@ -29,7 +33,7 @@ public class DocumentService {
     private final CompanyInfoRepository compRep;
     private final TemplateEngine templateEngine;
 
-    private final DateTimeFormatter dtf =  DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy.г");
 
 
     public byte[] getWorkleavePdf(Long workleaveId, Boolean createAgain) {
@@ -64,8 +68,8 @@ public class DocumentService {
         context.setVariable("daysOff",daysOff);
         context.setVariable("startDate",startDate);
         context.setVariable("endDate",endDate);
-        context.setVariable("fillDate",fillDate);
-        context.setVariable("jobTitle",jobTitle);
+        context.setVariable("fillDate", fillDate);
+        context.setVariable("jobTitle", jobTitle);
 
 
         String workLeaveHtml = templateEngine.process("work_leave", context);
@@ -74,7 +78,11 @@ public class DocumentService {
         PdfWriter pdfWriter = new PdfWriter(byteArrayOutputStream);
         PdfDocument pdfDocument = new PdfDocument(pdfWriter);
         pdfDocument.setDefaultPageSize(PageSize.A4);
-        HtmlConverter.convertToPdf(workLeaveHtml,pdfDocument,new ConverterProperties());
+        ConverterProperties converterProperties = new ConverterProperties();
+        FontSet fontSet = new FontSet();
+        fontSet.addFont("fonts/Arial.TTF");
+        converterProperties.setFontProvider(new FontProvider(fontSet));
+        HtmlConverter.convertToPdf(workLeaveHtml, pdfDocument, converterProperties);
 
         return byteArrayOutputStream.toByteArray();
     }

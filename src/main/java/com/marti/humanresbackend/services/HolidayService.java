@@ -3,6 +3,7 @@ package com.marti.humanresbackend.services;
 import com.marti.humanresbackend.models.entities.Holiday;
 import com.marti.humanresbackend.models.views.APIHolidayView;
 import com.marti.humanresbackend.repositories.HolidayRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -44,8 +45,13 @@ public class HolidayService {
         }
     }
 
-    public List<Holiday> getAllHolidays(){return holidayRep.findAll();}
-    public List<Holiday> getAllHolidays(LocalDate startDate, LocalDate endDate){return holidayRep.findAllBetween(startDate,endDate);}
+    public List<Holiday> getAllHolidays() {
+        return holidayRep.findAll(Sort.by(Sort.Direction.DESC, "holiday"));
+    }
+
+    public List<Holiday> getAllHolidays(LocalDate startDate, LocalDate endDate) {
+        return holidayRep.findAllBetween(startDate, endDate);
+    }
 
     public void deleteHoliday(Long Id){holidayRep.delete(holidayRep.getById(Id));}
 }

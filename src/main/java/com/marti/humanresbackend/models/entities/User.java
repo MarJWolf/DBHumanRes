@@ -20,7 +20,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique=true, nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
     private String pass;
     private String fullName;
@@ -30,7 +30,7 @@ public class User {
 
     @Column(name = "workplace_id")
     private Long workplaceId;
-//to remove
+    //to remove
     private int contractPaidDays;
 
     private Role role;
@@ -38,11 +38,11 @@ public class User {
     private Long managerId;
 
     @OneToMany()
-    @JoinColumn(name="userId")
+    @JoinColumn(name = "userId")
     private List<WorkLeave> allWorkleaves = new ArrayList<>();
 
     @OneToMany()
-    @JoinColumn(name="userDaysId")
+    @JoinColumn(name = "userDaysId")
     private List<Days> allDays = new ArrayList<>();
 
     public User(String email, String pass, String fullName, Long jobTitle, Long workplaceId, int contractPaidDays, Role role, Long managerId) {
@@ -55,6 +55,7 @@ public class User {
         this.role = role;
         this.managerId = managerId;
     }
+
     public User(UserView uv) {
         this.email = uv.email();
         this.pass = uv.pass();
@@ -66,7 +67,7 @@ public class User {
         this.managerId = uv.managerId();
     }
 
-    public static User updateUser(User u, UpdateUserView uuv){
+    public static User updateUser(User u, UpdateUserView uuv) {
         u.setEmail(uuv.email());
         u.setPass(uuv.pass());
         u.setFullName(uuv.fullName());
@@ -76,5 +77,15 @@ public class User {
         u.setRole(uuv.role());
         u.setManagerId(uuv.managerId());
         return u;
+    }
+
+    public void updateDays(int year) {
+        List<Days> list = new ArrayList<>(this.allDays);
+        this.allDays.clear();
+        for (Days days : list) {
+            if (days.getYear() + 2 <= year)
+                days.setUse(false);
+            this.allDays.add(days);
+        }
     }
 }

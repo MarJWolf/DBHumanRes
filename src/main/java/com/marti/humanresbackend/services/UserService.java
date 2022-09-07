@@ -23,15 +23,18 @@ public class UserService {
     private final WorkplaceRepository workRep;
     private final CompanyInfoRepository compRep;
 
+    private final DaysService daysService;
+
     private final DaysRepository daysRep;
 
     @Autowired
-    public UserService(UserRepository userRep, ManagerRepository manRep, JobTitleRepository jobRep, WorkplaceRepository workRep, CompanyInfoRepository compRep, DaysRepository daysRep) {
+    public UserService(UserRepository userRep, ManagerRepository manRep, JobTitleRepository jobRep, WorkplaceRepository workRep, CompanyInfoRepository compRep, DaysService daysService, DaysRepository daysRep) {
         this.userRep = userRep;
         this.manRep = manRep;
         this.jobRep = jobRep;
         this.workRep = workRep;
         this.compRep = compRep;
+        this.daysService = daysService;
         this.daysRep = daysRep;
     }
 
@@ -81,33 +84,45 @@ public class UserService {
         return users.stream().map(UserDTO::new).collect(Collectors.toList());
     }
 
-    public List<UserDTO> getAllInactiveSimplified(){
+    public List<UserDTO> getAllInactiveSimplified() {
         List<User> users = userRep.findAllByJobTitleIdIsNullOrderByFullName();
         return users.stream().map(UserDTO::new).collect(Collectors.toList());
     }
 
-    public List<User> getAllByManager(Long id){
+    public List<User> getAllByManager(Long id) {
         return userRep.findByManagerId(id);
     }
 
+    public List<User> getAdmins() {
+        return userRep.findAllByRole(Role.Admin);
+    }
 
-    public void updateUser(User u){
+    public void updateUser(User u) {
         userRep.save(u);
     }
 
+    public void yearlyDaysUpdate(int year) {
+        for (User user : getAll()) {
+            if (user.getAllDays().stream().noneMatch(days -> days.getYear() == year)) {
+                user.getAllDays().add(new Days(user.getId(), user.getContractPaidDays(), year, true));
+                user.updateDays(year);
+            }
+            daysRep.saveAll(user.getAllDays());
+            updateUser(user);
+        }
+    }
+
     //used for updating user
-    public void updateUser(UpdateUserView uuv){
+    public void updateUser(UpdateUserView uuv) {
         User u = getUserById(uuv.id());
-        if(u.getRole() != Role.Manager && uuv.role() == Role.Manager)
-        {
+        if (u.getRole() != Role.Manager && uuv.role() == Role.Manager) {
             manRep.save(new Manager(u));
         }
-        if(u.getRole() == Role.Manager && uuv.role() != Role.Manager)
-        {
+        if (u.getRole() == Role.Manager && uuv.role() != Role.Manager) {
             manRep.delete(manRep.findManagerByUserManager(u));
         }
         for (Days days:uuv.days()) {
-            updateDays(days.getId(), days.getDays(), days.getYear(), days.isUse());
+            daysService.updateDays(days.getId(), days.getDays(), days.getYear(), days.isUse());
         }
         updateUser(User.updateUser(u,uuv));
     }
@@ -130,8 +145,6 @@ public class UserService {
         u.setManagerId(null);
         updateUser(u);
     }
-
-
     //job
 
     public List<JobTitle> allJobTitles(){return jobRep.findAll();}
@@ -167,51 +180,18 @@ public class UserService {
         workRep.save(wp);
     }
 
-    public void deleteWorkplace(Long Id){
+    public void deleteWorkplace(Long Id) {
         workRep.delete(workRep.getById(Id));
-    }
-
-    //days
-
-    public List<Days> allDays(){return daysRep.findAll();}
-
-    public List<Days> allDaysByUser(Long userID){return daysRep.getDaysByUserId(userID);}
-    public List<Days> getUsableDaysByUser(Long userID){return daysRep.getUsableDaysByUserId(userID);}
-
-    public void createDays(Long userID, int days, int year, boolean use){daysRep.save(new Days( userID,days, year, use));}
-    public List<Days> createDays(Days days){
-        Days save = daysRep.save(days);
-        return allDaysByUser(save.getUserDaysId());
-    }
-
-    public void updateDays(Long daysID, int days, int year, boolean use){
-        Days Days = daysRep.getById(daysID);
-        Days.setDays(days);
-        Days.setYear(year);
-        Days.setUse(use);
-        daysRep.save(Days);
-    }
-
-    public void deleteDays(Long Id){daysRep.delete(daysRep.getById(Id));}
-
-    //companyInfo
-
-    public void createCompanyInfo(String name, String CEOname){
-        compRep.save(new CompanyInfo(name, CEOname));
-    }
-
-    public void updateCompanyInfo(String name, String CEOname){
-        CompanyInfo compInfo = compRep.getById(1L);
-        compInfo.setCompanyName(name);
-        compInfo.setCompanyCEOName(CEOname);
-        compRep.save(compInfo);
-    }
-
-    public CompanyInfo getCompanyInfo(){
-        return compRep.findById(1L).orElse(null);
     }
 
     public String getWorkplaceByUserId(Long id) {
         return workRep.findByUserId(id);
     }
+
+    //days
+
+
+    //companyInfo
+
+
 }

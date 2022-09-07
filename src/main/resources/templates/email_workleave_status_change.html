@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body th:style="'font-family: Arial,serif; padding:15px'">
+<div>
+    <img src='cid:company_logo' style="width:100%" alt="Quanterall logo"/>
+    <h2>Имате обновление на статуса на отпуска си!</h2>
+    Здравейте <span th:text="${user}"></span>! <br>
+    Ващият <span th:text="${type}"></span> отпуск от <span th:text="${startDate}"></span> до <span
+        th:text="${endDate}"></span> включително е <span th:text="${status}"></span>.
+    <hr>
+    <div> Дата: <span th:text="${fillDate}"></span></div>
+
+</div>
+</body>
+</html>

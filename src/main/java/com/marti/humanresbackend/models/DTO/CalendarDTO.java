@@ -15,7 +15,6 @@ import java.util.Map;
 public class CalendarDTO {
     private String workplace;
     private String name;
-
     private int allLeaves;
     private Map<LocalDate, CalendarDayStatus> days;
 
